@@ -11,7 +11,7 @@ namespace Redress.Backend.Domain.Entities
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public int RatingCount { get; set; }
-        public string RatingStatus { get; set; }
+        public string? RatingStatus { get; set; } // Peremoga
         public double AverageRating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
