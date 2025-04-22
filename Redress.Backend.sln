@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.API", "RedressAPI\Redress.API.csproj", "{C2BD24A9-6266-4896-84CD-D6448B25DEC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Application", "Redress.Backend.Application\Redress.Backend.Application.csproj", "{232861CC-5354-4B6D-B09B-9E33425A4D15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Domain", "Redress.Backend.Domain\Redress.Backend.Domain.csproj", "{98BCF90F-FCE7-4668-B407-41411DAC899A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Infrastructure", "Redress.Backend.Infrastructure\Redress.Backend.Infrastructure.csproj", "{A4DB1AED-6E7B-472B-9AAE-C2B92AE46E04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Contracts", "Redress.Backend.Contracts\Redress.Backend.Contracts.csproj", "{88034532-FE10-41EE-B347-5BC3D9E23F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.API", "Redress.Backend.API\Redress.Backend.API.csproj", "{6FC6A368-8018-4A18-9B01-9F0193C3860B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98BCF90F-FCE7-4668-B407-41411DAC899A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BCF90F-FCE7-4668-B407-41411DAC899A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98BCF90F-FCE7-4668-B407-41411DAC899A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98BCF90F-FCE7-4668-B407-41411DAC899A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4DB1AED-6E7B-472B-9AAE-C2B92AE46E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4DB1AED-6E7B-472B-9AAE-C2B92AE46E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4DB1AED-6E7B-472B-9AAE-C2B92AE46E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4DB1AED-6E7B-472B-9AAE-C2B92AE46E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88034532-FE10-41EE-B347-5BC3D9E23F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88034532-FE10-41EE-B347-5BC3D9E23F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88034532-FE10-41EE-B347-5BC3D9E23F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88034532-FE10-41EE-B347-5BC3D9E23F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FC6A368-8018-4A18-9B01-9F0193C3860B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FC6A368-8018-4A18-9B01-9F0193C3860B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FC6A368-8018-4A18-9B01-9F0193C3860B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FC6A368-8018-4A18-9B01-9F0193C3860B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@RedressAPI_HostAddress = http://localhost:5082
+
+GET {{RedressAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

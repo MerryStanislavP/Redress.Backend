@@ -1,0 +1,15 @@
+﻿
+namespace Redress.Backend.Domain.Entities
+{
+    public class Auction // аукціон
+    {
+        public Guid Id { get; set; }
+        public Guid ListingId { get; set; }
+        public Listing Listing { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime EndAt { get; set; }
+        public decimal StartPrice { get; set; }
+        public decimal MinStep { get; set; }
+    }
+
+}
