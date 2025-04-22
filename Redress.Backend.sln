@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35728.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.API", "RedressAPI\Redress.API.csproj", "{C2BD24A9-6266-4896-84CD-D6448B25DEC2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Application", "Redress.Backend.Application\Redress.Backend.Application.csproj", "{232861CC-5354-4B6D-B09B-9E33425A4D15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redress.Backend.Domain", "Redress.Backend.Domain\Redress.Backend.Domain.csproj", "{98BCF90F-FCE7-4668-B407-41411DAC899A}"
@@ -21,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2BD24A9-6266-4896-84CD-D6448B25DEC2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{232861CC-5354-4B6D-B09B-9E33425A4D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
