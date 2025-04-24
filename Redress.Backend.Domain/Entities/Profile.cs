@@ -1,4 +1,6 @@
 ﻿
+using Redress.Backend.Domain.Enums;
+
 namespace Redress.Backend.Domain.Entities
 {
     public class Profile // профіль
@@ -9,7 +11,7 @@ namespace Redress.Backend.Domain.Entities
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public int? RatingCount { get; set; }
-        public string? RatingStatus { get; set; } 
+        public RatingStatus RatingStatus { get; set; } = RatingStatus.Newbie;
         public double? AverageRating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public User? User { get; set; } // навигационное свойство User
