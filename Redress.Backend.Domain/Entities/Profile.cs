@@ -15,5 +15,9 @@ namespace Redress.Backend.Domain.Entities
         public User? User { get; set; } // навигационное свойство User
         public Guid UserId { get; set; } // FK User, зависимость от сущности User
         public ProfileImage? ProfileImage {  get; set; } // навигационное свойство ProfileImage
+        public List<Bid> Bids { get; set; } = new List<Bid>();
+        public List<Favorite> Favorites { get; set; } = new List<Favorite>();
+        public List<Listing> listings { get; set; } = new List<Listing>();
+        public List<Deal> deals { get; set; } = new List<Deal>();
     }
 }

@@ -5,8 +5,8 @@ namespace Redress.Backend.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid ProfileId { get; set; }
-        public Profile Profile { get; set; }
+        public Profile? Profile { get; set; }
         public Guid ListingId { get; set; }
-        public Listing Listing { get; set; }
+        public Listing? Listing { get; set; }
     }
 }

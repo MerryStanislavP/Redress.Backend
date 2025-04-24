@@ -10,5 +10,9 @@ namespace Redress.Backend.Domain.Entities
         public decimal Price { get; set; } = decimal.Zero;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public Feedback? Feedback { get; set; } // навигационное свойство Feedback
+        public Listing? Listing { get; set; } // навигационное свойство Listing
+        public Guid ListingId {  get; set; }
+        public Profile? Profile { get; set; }
+        public Guid ProfileId { get; set; }
     }
 }
