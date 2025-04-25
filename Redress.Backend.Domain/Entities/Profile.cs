@@ -19,7 +19,7 @@ namespace Redress.Backend.Domain.Entities
         public ProfileImage? ProfileImage {  get; set; } // навигационное свойство ProfileImage
         public List<Bid> Bids { get; set; } = new List<Bid>();
         public List<Favorite> Favorites { get; set; } = new List<Favorite>();
-        public List<Listing> listings { get; set; } = new List<Listing>();
-        public List<Deal> deals { get; set; } = new List<Deal>();
+        public List<Listing> Listings { get; set; } = new List<Listing>();
+        public List<Deal> Deals { get; set; } = new List<Deal>();
     }
 }

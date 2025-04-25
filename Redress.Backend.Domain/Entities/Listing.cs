@@ -22,9 +22,9 @@ namespace Redress.Backend.Domain.Entities
         public Auction? Auction { get; set; }
         public Deal? Deal { get; set; }
 
-        public List<Favorite> favorites { get; set; } = new List<Favorite>();
+        public List<Favorite> Favorites { get; set; } = new List<Favorite>();
 
-        public List<ListingImage> listingImages { get; set; } = new List<ListingImage>();
+        public List<ListingImage> ListingImages { get; set; } = new List<ListingImage>();
 
     }
 }
