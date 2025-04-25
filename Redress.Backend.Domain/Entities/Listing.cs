@@ -25,6 +25,5 @@ namespace Redress.Backend.Domain.Entities
         public List<Favorite> Favorites { get; set; } = new List<Favorite>();
 
         public List<ListingImage> ListingImages { get; set; } = new List<ListingImage>();
-
     }
 }

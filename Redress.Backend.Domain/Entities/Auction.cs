@@ -10,7 +10,6 @@ namespace Redress.Backend.Domain.Entities
         public decimal MinStep { get; set; }
         public Guid ListingId { get; set; }
         public Listing? Listing { get; set; }
-
         public List<Bid> Bids { get; set; } = new List<Bid>();
     }
 

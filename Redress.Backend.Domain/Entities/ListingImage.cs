@@ -10,5 +10,4 @@ namespace Redress.Backend.Domain.Entities
         public Guid ListingId { get; set; }
         public Listing? Listing { get; set; }
     }
-
 }
