@@ -5,6 +5,6 @@ namespace Redress.Backend.Domain.Enums
     {
         Newbie,
         Verified,
-        Reliable
+        Reliable          
     }
 }

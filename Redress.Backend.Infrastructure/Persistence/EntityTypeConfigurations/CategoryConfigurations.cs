@@ -13,11 +13,17 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
 
             builder.Property(c => c.Sex)
                    .IsRequired();
+            builder.Property(c => c.ParentId);
 
             builder.HasOne(c => c.Parent)
                    .WithMany(p => p.Children)
                    .HasForeignKey(c => c.ParentId)
                    .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(c => c.Listings)
+                    .WithOne(l => l.Category)
+                    .HasForeignKey(l => l.CategoryId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Restrict);                 // Нельзя удалять использованные категории
         }
     }
 }

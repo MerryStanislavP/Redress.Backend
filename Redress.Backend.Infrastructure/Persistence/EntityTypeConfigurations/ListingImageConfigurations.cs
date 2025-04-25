@@ -16,16 +16,16 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
                    .HasMaxLength(255);
 
             builder.Property(i => i.Url)
-                   .IsRequired()
-                   .HasMaxLength(500);
+                   .IsRequired();
 
             builder.Property(i => i.CreatedAt)
                    .IsRequired();
 
             builder.HasOne(i => i.Listing)
-                   .WithMany()
+                   .WithMany(l => l.ListingImages)
                    .HasForeignKey(i => i.ListingId)
-                   .IsRequired();
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

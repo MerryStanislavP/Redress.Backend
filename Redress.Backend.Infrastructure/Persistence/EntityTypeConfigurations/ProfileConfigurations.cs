@@ -7,38 +7,49 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
 {
     public class ProfileConfigurations : IEntityTypeConfiguration<Profile>
     {
-        public void Configure(EntityTypeBuilder<Profile> builder)
+        public void Configure(EntityTypeBuilder<Profile> bilder)
         {
-            builder.HasKey(p => p.Id);
+            bilder.HasKey(p => p.Id);
 
-            builder.Property(p => p.Balance)
-                   .HasPrecision(18, 2);
+            bilder.Property(p => p.Balance).HasPrecision(18, 2);
+            bilder.Property(p => p.Bio);
+            bilder.Property(p => p.Latitude);
+            bilder.Property(p => p.Longitude);
+            bilder.Property(p => p.RatingCount);
+            bilder.Property(p => p.RatingStatus).IsRequired();
+            bilder.Property(p => p.AverageRating);
+            bilder.Property(p => p.CreatedAt).IsRequired();
 
-            builder.Property(p => p.Bio)
-                   .HasMaxLength(1000);
+            bilder.HasOne(p => p.User)
+             .WithOne(u => u.Profile)
+             .HasForeignKey<Profile>(p => p.UserId)
+             .IsRequired()
+             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.Latitude)
-                   .IsRequired();
+            bilder.HasOne(p => p.ProfileImage)
+             .WithOne(pi => pi.Profile)
+             .HasForeignKey<ProfileImage>(pi => pi.ProfileId)
+             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.Longitude)
-                   .IsRequired();
+            bilder.HasMany(p => p.Bids)
+             .WithOne(b => b.Profile)
+             .HasForeignKey(b => b.ProfileId)
+             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.RatingCount)
-                   .IsRequired();
+            bilder.HasMany(p => p.Favorites)
+             .WithOne(f => f.Profile)
+             .HasForeignKey(f => f.ProfileId)
+             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.RatingStatus)
-                   .HasMaxLength(100);
+            bilder.HasMany(p => p.Listings)
+             .WithOne(l => l.Profile)
+             .HasForeignKey(l => l.ProfileId)
+             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.AverageRating)
-                   .IsRequired();
-
-            builder.Property(p => p.CreatedAt)
-                   .IsRequired();
-
-            builder.HasOne(p => p.User)
-                   .WithOne(u => u.Profile)
-                   .HasForeignKey<Profile>(p => p.UserId)
-                   .IsRequired();
+            bilder.HasMany(p => p.Deals)
+             .WithOne(d => d.Profile)
+             .HasForeignKey(d => d.ProfileId)
+             .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

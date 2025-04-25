@@ -26,9 +26,10 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
                    .IsRequired();
 
             builder.HasOne(f => f.Deal)
-                   .WithMany()
-                   .HasForeignKey(f => f.DealId)
-                   .IsRequired();
+                   .WithOne(d => d.Feedback)
+                   .HasForeignKey<Feedback>(f => f.DealId)
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

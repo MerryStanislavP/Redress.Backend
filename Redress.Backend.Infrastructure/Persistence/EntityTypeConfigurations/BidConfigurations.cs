@@ -27,6 +27,17 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
                    .WithMany()
                    .HasForeignKey(b => b.ProfileId)
                    .IsRequired();
+            builder.HasOne(b => b.Auction)
+                    .WithMany(a => a.Bids)
+                    .HasForeignKey(b => b.AuctionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(b => b.Profile)
+                    .WithMany(p => p.Bids)
+                    .HasForeignKey(b => b.ProfileId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Restrict);                 // Профиль нельзя удалить если есть ставки
         }
     }
 }
+

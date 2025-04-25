@@ -30,8 +30,11 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
             builder.Property(u => u.Role)
                    .IsRequired();
 
-            builder.Property(u => u.Sex)
-                   .IsRequired();
+            builder.Property(u => u.Sex);
+            builder.HasOne(u => u.Profile)
+                    .WithOne(p => p.User)
+                    .HasForeignKey<Profile>(p => p.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -14,12 +14,14 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
             builder.HasOne(f => f.Profile)
                    .WithMany()
                    .HasForeignKey(f => f.ProfileId)
-                   .IsRequired();
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.Cascade);                   // удаление profile удаляет favs
 
             builder.HasOne(f => f.Listing)
-                   .WithMany()
-                   .HasForeignKey(f => f.ListingId)
-                   .IsRequired();
+                    .WithMany(l => l.Favorites)
+                    .HasForeignKey(f => f.ListingId)
+                    .IsRequired()
+                     .OnDelete(DeleteBehavior.Cascade); // удаление listing удаляет favs
         }
     }
 }
