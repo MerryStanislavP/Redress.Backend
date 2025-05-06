@@ -1,0 +1,66 @@
+﻿using MediatR;
+using Redress.Backend.Contracts.DTOs.CreateDTO;
+using Redress.Backend.Domain.Entities;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using Redress.Backend.Application.Interfaces;
+
+namespace Redress.Backend.Application.Services.Auth.Register
+{
+    public class RegisterUserCommand : IRequest<Guid>
+    {
+        public UserCreateDto User { get; set; }
+    }
+
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Guid>
+    {
+        private readonly IRedressDbContext _context;
+        private readonly IMapper _mapper;
+
+        public RegisterUserCommandHandler(IRedressDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        {
+            // Check if user with same email already exists
+            var userExists = await _context.Users
+                .AnyAsync(u => u.Email == request.User.Email, cancellationToken);
+
+            if (userExists)
+                throw new InvalidOperationException($"User with email {request.User.Email} already exists");
+
+            // Create user
+            var user = _mapper.Map<User>(request.User);
+            
+            // Hash password
+            user.PasswordHash = HashPassword(request.User.PasswordHash);
+
+            // Create profile for user
+            var profile = new Domain.Entities.Profile
+            {
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _context.Users.AddAsync(user, cancellationToken);
+            await _context.Profiles.AddAsync(profile, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return user.Id;
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
+        }
+    }
+}
