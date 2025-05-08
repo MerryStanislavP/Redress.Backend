@@ -1,18 +1,27 @@
-﻿using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Redress.Backend.Contracts.DTOs.ReadingDTO;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Application.Common.Models;
 
 namespace Redress.Backend.Application.Services.ListingArea.Favorites
 {
-    public class GetUserFavoritesQuery : IRequest<IEnumerable<ListingDto>>
+    public class GetUserFavoritesQuery : IRequest<PaginatedList<ListingDto>>
     {
         public Guid ProfileId { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
     }
 
-    public class GetUserFavoritesQueryHandler : IRequestHandler<GetUserFavoritesQuery, IEnumerable<ListingDto>>
+    public class GetUserFavoritesQueryHandler : IRequestHandler<GetUserFavoritesQuery, PaginatedList<ListingDto>>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -23,15 +32,21 @@ namespace Redress.Backend.Application.Services.ListingArea.Favorites
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ListingDto>> Handle(GetUserFavoritesQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ListingDto>> Handle(GetUserFavoritesQuery request, CancellationToken cancellationToken)
         {
-            var favorites = await _context.Favorites
-                .Include(f => f.Listing)
+            var query = _context.Favorites
                 .Where(f => f.ProfileId == request.ProfileId)
                 .Select(f => f.Listing)
+                .OrderByDescending(l => l.CreatedAt);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ProjectTo<ListingDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return _mapper.Map<IEnumerable<ListingDto>>(favorites);
+            return new PaginatedList<ListingDto>(items, request.Page, request.PageSize, totalCount);
         }
     }
 }

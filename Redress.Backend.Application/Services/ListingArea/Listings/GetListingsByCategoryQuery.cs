@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Redress.Backend.Contracts.DTOs.ReadingDTO;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Application.Common.Models;
 
 namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
-    public class GetListingsByCategoryQuery : IRequest<IEnumerable<ListingDto>>
+    public class GetListingsByCategoryQuery : IRequest<PaginatedList<ListingDto>>
     {
         public Guid CategoryId { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }
 
-    public class GetListingsByCategoryQueryHandler : IRequestHandler<GetListingsByCategoryQuery, IEnumerable<ListingDto>>
+    public class GetListingsByCategoryQueryHandler : IRequestHandler<GetListingsByCategoryQuery, PaginatedList<ListingDto>>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -30,19 +32,20 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ListingDto>> Handle(GetListingsByCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ListingDto>> Handle(GetListingsByCategoryQuery request, CancellationToken cancellationToken)
         {
-            var listings = await _context.Listings
-                .Include(l => l.Category)
-                .Include(l => l.Profile)
-                .Include(l => l.ListingImages)
+            var query = _context.Listings
                 .Where(l => l.CategoryId == request.CategoryId)
-                .OrderByDescending(l => l.CreatedAt)
+                .OrderByDescending(l => l.CreatedAt);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize)
+                .ProjectTo<ListingDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return _mapper.Map<IEnumerable<ListingDto>>(listings);
+            return new PaginatedList<ListingDto>(items, request.Page, request.PageSize, totalCount);
         }
     }
 }

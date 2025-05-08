@@ -1,15 +1,26 @@
-﻿using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Redress.Backend.Contracts.DTOs.ReadingDTO;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Application.Common.Models;
 
 namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 {
-    public class GetActiveAuctionsQuery : IRequest<IEnumerable<AuctionDto>> {}
+    public class GetActiveAuctionsQuery : IRequest<PaginatedList<AuctionDto>>
+    {
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+    }
 
-    public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQuery, IEnumerable<AuctionDto>>
+    public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQuery, PaginatedList<AuctionDto>>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -20,14 +31,20 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AuctionDto>> Handle(GetActiveAuctionsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<AuctionDto>> Handle(GetActiveAuctionsQuery request, CancellationToken cancellationToken)
         {
-            var activeAuctions = await _context.Auctions
-                .Include(a => a.Listing)
+            var query = _context.Auctions
                 .Where(a => a.EndAt == null || a.EndAt > DateTime.UtcNow)
+                .OrderByDescending(a => a.CreatedAt);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ProjectTo<AuctionDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return _mapper.Map<IEnumerable<AuctionDto>>(activeAuctions);
+            return new PaginatedList<AuctionDto>(items, request.Page, request.PageSize, totalCount);
         }
     }
 }

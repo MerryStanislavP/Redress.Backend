@@ -7,22 +7,31 @@ namespace Redress.Backend.Application.Common.Mappings
 {
     public class AssemblyMappingProfile : Profile
     {
-        public AssemblyMappingProfile(Assembly assembly) =>
-                ApplyMappingsFromAssembly(assembly);
+        public AssemblyMappingProfile()
+        {
+            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+        }
+
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
             var types = assembly.GetExportedTypes()
-                .Where(type => type.GetInterfaces()
-                    .Any(i => i.IsGenericType &&
-                    i.GetGenericTypeDefinition() == typeof(IMapWith<>)))
+                .Where(type => type.IsClass && !type.IsAbstract && typeof(Profile).IsAssignableFrom(type))
                 .ToList();
 
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type);
-                var methodInfo = type.GetMethod("Mapping");
-                methodInfo?.Invoke(instance, new object[] { this });
+                if (instance != null)
+                {
+                    ApplyMappingsFromInstance(instance);
+                }
             }
+        }
+
+        private void ApplyMappingsFromInstance(object instance)
+        {
+            var methodInfo = instance.GetType().GetMethod("Configure");
+            methodInfo?.Invoke(instance, new object[] { this });
         }
     }
 }
