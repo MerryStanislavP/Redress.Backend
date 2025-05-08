@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Redress.Backend.Infrastructure
+namespace Redress.Backend.Infrastructure.Persistence
 {
     public class RedressDbInitializer
     {

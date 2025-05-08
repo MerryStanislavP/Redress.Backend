@@ -3,7 +3,7 @@ using Redress.Backend.Application.Interfaces;
 using Redress.Backend.Domain.Entities;
 using Redress.Backend.Infrastructure.Persistence;
 
-namespace Redress.Backend.Infrastructure
+namespace Redress.Backend.Infrastructure.Persistence
 {
     public class RedressDbContext : DbContext, IRedressDbContext
     {
