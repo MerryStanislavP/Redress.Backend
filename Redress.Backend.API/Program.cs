@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application;
+using Redress.Backend.Infrastructure;
 using Redress.Backend.Infrastructure.Persistence;
 using System.Text.Json.Serialization;
 
@@ -25,6 +27,9 @@ namespace Redress.Backend.API
 
             // Add Persistence Services
             builder.Services.AddPersistence(builder.Configuration);
+
+            builder.Services.AddDbContext<RedressDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
