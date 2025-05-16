@@ -1,12 +1,17 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
+using Redress.Backend.Application.Common.Behavior;
 
 namespace Redress.Backend.Application.Services.UserArea.Users
 {
-    public class DeleteUserCommand : IRequest
+    public class DeleteUserCommand : IRequest, IRequireRole
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+
+        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>

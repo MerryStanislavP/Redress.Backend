@@ -12,9 +12,22 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.DealArea.Deals
 {
-    public class CreateDealCommand : IRequest<Guid>
+    public class CreateDealCommand : IRequest<Guid>, IOwnershipCheck
     {
         public DealCreateDto Deal { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            // Check if the profile exists and belongs to the user
+            var profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == Deal.ProfileId, cancellationToken);
+
+            if (profile == null)
+                return false;
+
+            return profile.UserId == UserId;
+        }
     }
 
     public class CreateDealCommandHandler : IRequestHandler<CreateDealCommand, Guid>

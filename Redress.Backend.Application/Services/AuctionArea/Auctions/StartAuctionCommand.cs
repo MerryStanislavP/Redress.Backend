@@ -13,9 +13,25 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 {
-    public class StartAuctionCommand : IRequest<Guid>
+    public class StartAuctionCommand : IRequest<Guid>, IOwnershipCheck
     {
         public AuctionCreateDto Auction { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            // We need to check if the user is allowed to create an auction for this listing
+            var listing = await context.Listings
+                .Include(l => l.Profile)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(l => l.Id == Auction.ListingId, cancellationToken);
+
+            if (listing == null)
+                return false;
+
+            // User must be the owner of the listing to start an auction
+            return listing.Profile?.UserId == UserId;
+        }
     }
 
     public class StartAuctionCommandHandler : IRequestHandler<StartAuctionCommand, Guid>

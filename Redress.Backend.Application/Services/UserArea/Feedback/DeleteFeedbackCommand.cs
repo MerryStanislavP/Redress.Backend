@@ -1,12 +1,40 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Feedback
 {
-    public class DeleteFeedbackCommand : IRequest
+    public class DeleteFeedbackCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user == null)
+                return false;
+
+            // Admin can delete any feedback
+            if (user.Role == UserRole.Admin)
+                return true;
+
+            // Get the feedback with related entities
+            var feedback = await context.Feedbacks
+                .Include(f => f.Deal)
+                .ThenInclude(d => d.Profile)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(f => f.Id == Id, cancellationToken);
+
+            if (feedback == null)
+                return false;
+
+            // Only the user who owns the profile that received the feedback can delete it
+            return feedback.Deal?.Profile?.UserId == UserId;
+        }
     }
 
     public class DeleteFeedbackCommandHandler : IRequestHandler<DeleteFeedbackCommand>

@@ -1,12 +1,37 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Profiles
 {
-    public class DeleteProfileImageCommand : IRequest
+    public class DeleteProfileImageCommand : IRequest, IOwnershipCheck
     {
         public Guid ProfileId { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user == null)
+                return false;
+
+            // Admin can delete any profile image
+            if (user.Role == UserRole.Admin)
+                return true;
+
+            // Get the profile
+            var profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == ProfileId, cancellationToken);
+
+            if (profile == null)
+                return false;
+
+            // The user can only delete their own profile image
+            return profile.UserId == UserId;
+        }
     }
 
     public class DeleteProfileImageCommandHandler : IRequestHandler<DeleteProfileImageCommand>

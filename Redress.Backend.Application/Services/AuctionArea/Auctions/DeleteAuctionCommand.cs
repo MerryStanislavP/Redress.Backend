@@ -5,10 +5,36 @@ using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 {
-    public class DeleteAuctionCommand : IRequest
+    public class DeleteAuctionCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; } // ID пользователя, выполняющего удаление
+        
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user == null)
+                return false;
+
+            // Admin and moderator can delete auctions
+            if (user.Role == UserRole.Admin || user.Role == UserRole.Moderator)
+                return true;
+
+            // Check if auction belongs to user
+            var auction = await context.Auctions
+                .Include(a => a.Listing)
+                .ThenInclude(l => l.Profile)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(a => a.Id == Id, cancellationToken);
+
+            if (auction == null)
+                return false;
+
+            // Listing owner can delete the auction if it's not active
+            return auction.Listing?.Profile?.UserId == UserId && auction.EndAt <= DateTime.UtcNow;
+        }
     }
 
     public class DeleteAuctionCommandHandler : IRequestHandler<DeleteAuctionCommand>
@@ -22,17 +48,6 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 
         public async Task Handle(DeleteAuctionCommand request, CancellationToken cancellationToken)
         {
-            // Получаем пользователя для проверки прав
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
-
-            if (user == null)
-                throw new UnauthorizedAccessException("User not found");
-
-            // Проверяем, что пользователь - администратор или модератор
-            if (user.Role != UserRole.Admin && user.Role != UserRole.Moderator)
-                throw new UnauthorizedAccessException("Only administrators and moderators can delete auctions");
-
             var auction = await _context.Auctions
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 

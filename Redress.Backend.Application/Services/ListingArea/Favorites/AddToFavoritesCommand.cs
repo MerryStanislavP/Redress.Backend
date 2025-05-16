@@ -11,9 +11,23 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.ListingArea.Favorites
 {
-    public class AddToFavoritesCommand : IRequest<Guid>
+    public class AddToFavoritesCommand : IRequest<Guid>, IOwnershipCheck
     {
         public FavoriteCreateDto Favorite { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            // Get the profile
+            var profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == Favorite.ProfileId, cancellationToken);
+
+            if (profile == null)
+                return false;
+
+            // User can only add to favorites for their own profile
+            return profile.UserId == UserId;
+        }
     }
 
     public class AddToFavoritesCommandHandler : IRequestHandler<AddToFavoritesCommand, Guid>

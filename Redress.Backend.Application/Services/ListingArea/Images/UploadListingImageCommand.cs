@@ -12,9 +12,24 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.ListingArea.Images
 {
-    public class UploadListingImageCommand : IRequest<Guid>
+    public class UploadListingImageCommand : IRequest<Guid>, IOwnershipCheck
     {
         public ListingImageCreateDto Image { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var listing = await context.Listings
+                .Include(l => l.Profile)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(l => l.Id == Image.ListingId, cancellationToken);
+
+            if (listing == null)
+                return false;
+
+            // Only listing owner can upload images
+            return listing.Profile?.UserId == UserId;
+        }
     }
 
     public class UploadListingImageCommandHandler : IRequestHandler<UploadListingImageCommand, Guid>

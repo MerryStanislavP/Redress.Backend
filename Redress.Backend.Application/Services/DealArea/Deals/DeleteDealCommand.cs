@@ -4,9 +4,29 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.DealArea.Deals
 {
-    public class DeleteDealCommand : IRequest
+    public class DeleteDealCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var deal = await context.Deals
+                .Include(d => d.Listing)
+                .ThenInclude(l => l.Profile)
+                .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(d => d.Id == Id, cancellationToken);
+
+            if (deal == null)
+                return false;
+
+            // Admin can delete any deal
+            if (deal.Listing?.Profile?.User?.Role == Domain.Enums.UserRole.Admin)
+                return true;
+
+            // Owner of the listing can delete deals related to their listings
+            return deal.Listing?.Profile?.UserId == UserId;
+        }
     }
 
     public class DeleteDealCommandHandler : IRequestHandler<DeleteDealCommand>

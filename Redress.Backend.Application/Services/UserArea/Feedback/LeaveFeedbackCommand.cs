@@ -7,9 +7,26 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.UserArea.Feedback
 {
-    public class LeaveFeedbackCommand : IRequest<Guid>
+    public class LeaveFeedbackCommand : IRequest<Guid>, IOwnershipCheck
     {
         public FeedbackCreateDto Feedback { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            // Check if the deal exists
+            var deal = await context.Deals
+                .Include(d => d.Listing)
+                .ThenInclude(l => l.Profile)
+                .FirstOrDefaultAsync(d => d.Id == Feedback.DealId, cancellationToken);
+
+            if (deal == null)
+                return false;
+
+            // The user must be the owner of the listing to leave feedback
+            // (feedback is left for the buyer by the seller)
+            return deal.Listing?.Profile?.UserId == UserId;
+        }
     }
 
     public class LeaveFeedbackCommandHandler : IRequestHandler<LeaveFeedbackCommand, Guid>

@@ -9,13 +9,40 @@ using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.DealArea.Deals
 {
-    public class UpdateDealStatusCommand : IRequest
+    public class UpdateDealStatusCommand : IRequest, IOwnershipCheck
     {
         public Guid DealId { get; set; }
+        public Guid UserId { get; set; }
         public DealUpdateDto UpdateDto { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user == null)
+                return false;
+
+            // Admin can update any deal
+            if (user.Role == UserRole.Admin)
+                return true;
+
+            // Get the deal with related entities
+            var deal = await context.Deals
+                .Include(d => d.Listing)
+                .ThenInclude(l => l.Profile)
+                .FirstOrDefaultAsync(d => d.Id == DealId, cancellationToken);
+
+            if (deal == null)
+                return false;
+
+            // Only the listing owner can update deal status
+            return deal.Listing?.Profile?.UserId == UserId;
+        }
     }
 
     public class UpdateDealStatusCommandHandler : IRequestHandler<UpdateDealStatusCommand>

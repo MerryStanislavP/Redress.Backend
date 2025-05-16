@@ -5,10 +5,12 @@ using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.ListingArea.Categories
 {
-    public class DeleteCategoryCommand : IRequest
+    public class DeleteCategoryCommand : IRequest, IRequireRole
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; } // ID пользователя, выполняющего удаление
+        
+        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>
@@ -22,17 +24,6 @@ namespace Redress.Backend.Application.Services.ListingArea.Categories
 
         public async Task Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            // Получаем пользователя для проверки прав
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
-
-            if (user == null)
-                throw new UnauthorizedAccessException("User not found");
-
-            // Проверяем, что пользователь - администратор
-            if (user.Role != UserRole.Admin)
-                throw new UnauthorizedAccessException("Only administrators can delete categories");
-
             var category = await _context.Categories
                 .Include(c => c.Children)
                 .Include(c => c.Listings)

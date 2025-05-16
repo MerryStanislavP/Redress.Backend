@@ -6,15 +6,18 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Common.Models;
 using AutoMapper.QueryableExtensions;
+using Redress.Backend.Application.Common.Behavior;
 
 namespace Redress.Backend.Application.Services.UserArea.Users
 {
-    public class GetUsersByRoleQuery : IRequest<PaginatedList<UserDto>>
+    public class GetUsersByRoleQuery : IRequest<PaginatedList<UserDto>>, IRequireRole
     {
         public UserRole Role { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public Guid UserId { get; set; } // ID пользователя, который делает запрос
+
+        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class GetUsersByRoleQueryHandler : IRequestHandler<GetUsersByRoleQuery, PaginatedList<UserDto>>

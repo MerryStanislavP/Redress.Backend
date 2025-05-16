@@ -9,12 +9,17 @@ using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
+using Redress.Backend.Application.Common.Behavior;
 
 namespace Redress.Backend.Application.Services.UserArea.Users
 {
-    public class GetUserByIdQuery : IRequest<UserDto>
+    public class GetUserByIdQuery : IRequest<UserDto>, IRequireRole
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+
+        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto>

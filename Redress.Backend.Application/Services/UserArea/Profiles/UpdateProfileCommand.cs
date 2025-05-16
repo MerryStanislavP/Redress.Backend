@@ -9,13 +9,38 @@ using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Profiles
 {
-    public class UpdateProfileCommand : IRequest
+    public class UpdateProfileCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public ProfileUpdateDto UpdateDto { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user == null)
+                return false;
+
+            // Admin can update any profile
+            if (user.Role == UserRole.Admin)
+                return true;
+
+            // Get the profile
+            var profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+
+            if (profile == null)
+                return false;
+
+            // User can only update their own profile
+            return profile.UserId == UserId;
+        }
     }
 
     public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand>
