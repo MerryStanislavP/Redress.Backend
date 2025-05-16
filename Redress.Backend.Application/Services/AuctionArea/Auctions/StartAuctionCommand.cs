@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Redress.Backend.Contracts.DTOs.CreateDTO;
 using Redress.Backend.Domain.Entities;
+using Redress.Backend.Domain.Enums;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
@@ -40,6 +41,9 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 
             if (listing.Auction != null)
                 throw new InvalidOperationException("This listing already has an auction");
+
+            if (listing.Status != ListingStatus.Active)
+                throw new InvalidOperationException("Cannot create auction for inactive listing");
 
             var auction = _mapper.Map<Auction>(request.Auction);
             auction.CreatedAt = DateTime.UtcNow;

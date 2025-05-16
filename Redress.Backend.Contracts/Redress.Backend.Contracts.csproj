@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Models\" />
+    <Compile Remove="Interfaces\**" />
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Interfaces\**" />
+    <None Remove="Models\**" />
   </ItemGroup>
 
 </Project>

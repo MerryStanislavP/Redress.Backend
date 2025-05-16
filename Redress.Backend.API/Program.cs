@@ -1,8 +1,15 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application;
+using Redress.Backend.Application.Common.Behavior;
+using Redress.Backend.Application.Services.ListingArea.Listings;
+using Redress.Backend.Domain.Entities;
 using Redress.Backend.Infrastructure;
 using Redress.Backend.Infrastructure.Persistence;
 using System.Text.Json.Serialization;
+using MediatR.Extensions.FluentValidation.AspNetCore;
+using System.Reflection;
+using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.API
 {
@@ -22,6 +29,8 @@ namespace Redress.Backend.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
             // Add Application Services
             builder.Services.AddApplication();
 
@@ -33,6 +42,11 @@ namespace Redress.Backend.API
 
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // Регистрация поведений MediatR
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Application.Common.Behavior.ValidationBehavior<,>));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RoleRequirementBehavior<,>));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OwnershipRequirementBehavior<,>));
 
             // Add CORS
             builder.Services.AddCors(options =>

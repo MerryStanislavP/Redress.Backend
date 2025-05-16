@@ -9,15 +9,17 @@ using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 
 namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
-    public class GetListingByIdQuery : IRequest<ListingDto>
+    public class GetListingByIdQuery : IRequest<ListingDetailsDto>
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
     }
 
-    public class GetListingByIdQueryHandler : IRequestHandler<GetListingByIdQuery, ListingDto>
+    public class GetListingByIdQueryHandler : IRequestHandler<GetListingByIdQuery, ListingDetailsDto>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -28,8 +30,14 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             _mapper = mapper;
         }
 
-        public async Task<ListingDto> Handle(GetListingByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ListingDetailsDto> Handle(GetListingByIdQuery request, CancellationToken cancellationToken)
         {
+            var userExists = await _context.Users
+                .AnyAsync(u => u.Id == request.UserId, cancellationToken);
+
+            if (!userExists)
+                throw new KeyNotFoundException($"User with ID {request.UserId} not found");
+
             var listing = await _context.Listings
                 .Include(l => l.Category)
                 .Include(l => l.Profile)
@@ -41,7 +49,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             if (listing == null)
                 throw new KeyNotFoundException($"Listing with ID {request.Id} not found");
 
-            return _mapper.Map<ListingDto>(listing);
+            return _mapper.Map<ListingDetailsDto>(listing);
         }
     }
 }

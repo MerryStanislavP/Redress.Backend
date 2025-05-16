@@ -12,10 +12,23 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
-    public class UpdateListingCommand : IRequest
+    public class UpdateListingCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public ListingUpdateDto UpdateDto { get; set; }
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var listing = await context.Listings
+                .Include(l => l.Profile)
+                    .ThenInclude(u => u.User)
+                .FirstOrDefaultAsync(l => l.Id == Id, cancellationToken);
+
+            if (listing == null)
+                return false;
+
+            return listing.Profile?.UserId == UserId;
+        }
     }
 
     public class UpdateListingCommandHandler : IRequestHandler<UpdateListingCommand>
@@ -33,9 +46,6 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
         {
             var listing = await _context.Listings
                 .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
-
-            if (listing == null)
-                throw new KeyNotFoundException($"Listing with ID {request.Id} not found");
 
             // If category is being updated, verify it exists
             if (request.UpdateDto.CategoryId.HasValue)

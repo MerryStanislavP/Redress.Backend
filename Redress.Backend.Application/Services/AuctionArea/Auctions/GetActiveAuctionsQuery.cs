@@ -11,6 +11,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
 using Redress.Backend.Application.Common.Models;
+using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 {
@@ -18,6 +19,7 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
+        public Guid UserId { get; set; }
     }
 
     public class GetActiveAuctionsQueryHandler : IRequestHandler<GetActiveAuctionsQuery, PaginatedList<AuctionDto>>
@@ -33,9 +35,19 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 
         public async Task<PaginatedList<AuctionDto>> Handle(GetActiveAuctionsQuery request, CancellationToken cancellationToken)
         {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
+
+            if (user == null)
+                throw new UnauthorizedAccessException("User not found");
+
             var query = _context.Auctions
-                .Where(a => a.EndAt == null || a.EndAt > DateTime.UtcNow)
-                .OrderByDescending(a => a.CreatedAt);
+                .Include(a => a.Listing)
+                .Include(a => a.Bids)
+                .Where(a => a.Listing.IsAuction && 
+                           a.Listing.Status == ListingStatus.Active &&
+                           a.EndAt > DateTime.UtcNow)
+                .OrderBy(a => a.EndAt);
 
             var totalCount = await query.CountAsync(cancellationToken);
             var items = await query
