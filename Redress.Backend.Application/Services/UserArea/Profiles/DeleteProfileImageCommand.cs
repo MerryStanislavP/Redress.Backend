@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
-using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Profiles
 {
@@ -12,24 +11,13 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
 
         public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
         {
-            var user = await context.Users
-                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
-
-            if (user == null)
-                return false;
-
-            // Admin can delete any profile image
-            if (user.Role == UserRole.Admin)
-                return true;
-
-            // Get the profile
             var profile = await context.Profiles
                 .FirstOrDefaultAsync(p => p.Id == ProfileId, cancellationToken);
 
             if (profile == null)
                 return false;
 
-            // The user can only delete their own profile image
+            // User can only delete their own profile image
             return profile.UserId == UserId;
         }
     }
@@ -54,6 +42,10 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
 
             if (profile.ProfileImage == null)
                 throw new InvalidOperationException("Profile does not have an image to delete");
+
+            // TODO: Delete image from cloud storage
+            // var imageUrl = profile.ProfileImage.Url;
+            // await _cloudStorageService.DeleteFileAsync(imageUrl);
 
             _context.ProfileImages.Remove(profile.ProfileImage);
             await _context.SaveChangesAsync(cancellationToken);

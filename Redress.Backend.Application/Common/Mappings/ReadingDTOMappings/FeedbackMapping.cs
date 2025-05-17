@@ -1,4 +1,4 @@
-﻿using Redress.Backend.Contracts.DTOs.ReadingDTO;
+﻿using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 
 namespace Redress.Backend.Application.Common.Mappings.ReadingDTOMappings

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using Redress.Backend.Contracts.DTOs.CreateDTO;
+using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
