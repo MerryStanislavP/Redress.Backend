@@ -13,6 +13,9 @@ using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Profiles
 {
+    /// <summary>
+    /// teest
+    /// </summary>
     public class UpdateProfileCommand : IRequest, IOwnershipCheck
     {
         public Guid Id { get; set; }
