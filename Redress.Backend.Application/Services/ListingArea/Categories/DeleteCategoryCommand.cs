@@ -9,7 +9,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Categories
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; } // ID пользователя, выполняющего удаление
-
+        
         public UserRole RequiredRole => UserRole.Admin;
     }
 
@@ -44,4 +44,4 @@ namespace Redress.Backend.Application.Services.ListingArea.Categories
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
-}
+} 

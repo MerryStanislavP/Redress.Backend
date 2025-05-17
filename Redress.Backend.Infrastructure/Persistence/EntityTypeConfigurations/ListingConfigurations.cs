@@ -11,14 +11,14 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
         {
             builder.HasKey(l => l.Id);
 
-            builder.Property(l => l.Title).IsRequired().HasMaxLength(100);
+            builder.Property(l => l.Title).IsRequired();
             builder.Property(l => l.Latitude);
             builder.Property(l => l.Longitude);
             builder.Property(l => l.Price).IsRequired().HasPrecision(18, 2);
             builder.Property(l => l.CreatedAt).IsRequired();
             builder.Property(l => l.Status).IsRequired();
             builder.Property(l => l.IsAuction).IsRequired();
-            builder.Property(l => l.Description).IsRequired().HasMaxLength(1000);
+            builder.Property(l => l.Description).IsRequired();
 
             builder.HasOne(l => l.Profile)
              .WithMany(p => p.Listings)
