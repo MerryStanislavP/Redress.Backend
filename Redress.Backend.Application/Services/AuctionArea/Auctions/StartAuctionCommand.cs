@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using Redress.Backend.Contracts.DTOs.CreateDTO;
+using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 using Redress.Backend.Domain.Enums;
 using AutoMapper;
@@ -15,16 +15,16 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 {
     public class StartAuctionCommand : IRequest<Guid>, IOwnershipCheck
     {
+        public Guid ListingId { get; set; }
         public AuctionCreateDto Auction { get; set; }
         public Guid UserId { get; set; }
 
         public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
         {
-            // We need to check if the user is allowed to create an auction for this listing
             var listing = await context.Listings
                 .Include(l => l.Profile)
                 .ThenInclude(p => p.User)
-                .FirstOrDefaultAsync(l => l.Id == Auction.ListingId, cancellationToken);
+                .FirstOrDefaultAsync(l => l.Id == ListingId, cancellationToken);
 
             if (listing == null)
                 return false;
@@ -47,13 +47,12 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
 
         public async Task<Guid> Handle(StartAuctionCommand request, CancellationToken cancellationToken)
         {
-            // Verify that listing exists and is not already an auction
             var listing = await _context.Listings
                 .Include(l => l.Auction)
-                .FirstOrDefaultAsync(l => l.Id == request.Auction.ListingId, cancellationToken);
+                .FirstOrDefaultAsync(l => l.Id == request.ListingId, cancellationToken);
 
             if (listing == null)
-                throw new KeyNotFoundException($"Listing with ID {request.Auction.ListingId} not found");
+                throw new KeyNotFoundException($"Listing with ID {request.ListingId} not found");
 
             if (listing.Auction != null)
                 throw new InvalidOperationException("This listing already has an auction");
@@ -62,6 +61,7 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
                 throw new InvalidOperationException("Cannot create auction for inactive listing");
 
             var auction = _mapper.Map<Auction>(request.Auction);
+            auction.ListingId = request.ListingId;
             auction.CreatedAt = DateTime.UtcNow;
 
             await _context.Auctions.AddAsync(auction, cancellationToken);

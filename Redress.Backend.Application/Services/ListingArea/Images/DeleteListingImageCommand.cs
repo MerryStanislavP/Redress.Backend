@@ -20,7 +20,6 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             if (listingImage == null)
                 return false;
 
-            // Проверяем, является ли пользователь владельцем листинга
             if (listingImage.Listing?.Profile?.User?.Role == UserRole.Admin)
             {
                 return true;

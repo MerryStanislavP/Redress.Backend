@@ -43,11 +43,6 @@ namespace Redress.Backend.API
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            // Регистрация поведений MediatR
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Application.Common.Behavior.ValidationBehavior<,>));
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RoleRequirementBehavior<,>));
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OwnershipRequirementBehavior<,>));
-
             // Add CORS
             builder.Services.AddCors(options =>
             {

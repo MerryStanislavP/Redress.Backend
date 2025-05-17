@@ -1,4 +1,4 @@
-﻿namespace Redress.Backend.Contracts.DTOs.UpdateDTO
+﻿namespace Redress.Backend.Contracts.DTOs.UpdateDTOs
 {
     public class ListingUpdateDto 
     {

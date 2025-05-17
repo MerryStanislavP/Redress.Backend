@@ -49,6 +49,8 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
         public async Task Handle(DeleteAuctionCommand request, CancellationToken cancellationToken)
         {
             var auction = await _context.Auctions
+                .Include(a => a.Listing)
+                .Include(a => a.Bids)
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
             if (auction == null)
@@ -57,6 +59,15 @@ namespace Redress.Backend.Application.Services.AuctionArea.Auctions
             // Check if auction is active
             if (auction.EndAt > DateTime.UtcNow)
                 throw new InvalidOperationException("Cannot delete an active auction");
+
+            // Remove all bids
+            _context.Bids.RemoveRange(auction.Bids);
+
+            // Update listing to indicate it's no longer an auction
+            if (auction.Listing != null)
+            {
+                auction.Listing.IsAuction = false;
+            }
 
             _context.Auctions.Remove(auction);
             await _context.SaveChangesAsync(cancellationToken);
