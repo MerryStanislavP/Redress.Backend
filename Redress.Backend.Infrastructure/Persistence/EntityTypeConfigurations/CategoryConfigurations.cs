@@ -11,6 +11,10 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
         {
             builder.HasKey(c => c.Id);
 
+            builder.Property(c => c.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
             builder.Property(c => c.Sex)
                    .IsRequired();
             builder.Property(c => c.ParentId);

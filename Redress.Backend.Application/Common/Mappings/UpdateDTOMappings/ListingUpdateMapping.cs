@@ -1,4 +1,4 @@
-﻿using Redress.Backend.Contracts.DTOs.UpdateDTO;
+﻿using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
 

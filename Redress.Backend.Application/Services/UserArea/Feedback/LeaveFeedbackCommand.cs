@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Redress.Backend.Contracts.DTOs.CreateDTO;
+using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

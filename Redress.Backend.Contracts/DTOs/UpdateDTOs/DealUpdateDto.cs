@@ -1,6 +1,6 @@
 ﻿using Redress.Backend.Contracts.DTOs.Enums;
 
-namespace Redress.Backend.Contracts.DTOs.UpdateDTO
+namespace Redress.Backend.Contracts.DTOs.UpdateDTOs
 {
     public class DealUpdateDto
     {

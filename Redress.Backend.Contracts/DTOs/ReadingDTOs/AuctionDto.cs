@@ -1,5 +1,5 @@
 ﻿
-namespace Redress.Backend.Contracts.DTOs.ReadingDTO
+namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
 {
     public class AuctionDto 
     {
