@@ -10,6 +10,7 @@ namespace Redress.Backend.Infrastructure.Persistence.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<Favorite> builder)
         {
             builder.HasKey(f => f.Id);
+            builder.HasIndex(f => new { f.ProfileId, f.ListingId }).IsUnique();
 
             builder.HasOne(f => f.Profile)
                    .WithMany()
