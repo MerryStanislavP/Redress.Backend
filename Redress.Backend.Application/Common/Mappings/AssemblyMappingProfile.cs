@@ -5,33 +5,33 @@ using AutoMapper;
 
 namespace Redress.Backend.Application.Common.Mappings
 {
-    public class AssemblyMappingProfile : Profile
+    public class AssemblyMappingProfileLoader
     {
-        public AssemblyMappingProfile()
-        {
-            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
-        }
-
-        private void ApplyMappingsFromAssembly(Assembly assembly)
+        public static void ApplyMappingsFromAssembly(IMapperConfigurationExpression config, Assembly assembly)
         {
             var types = assembly.GetExportedTypes()
-                .Where(type => type.IsClass && !type.IsAbstract && typeof(Profile).IsAssignableFrom(type))
+                .Where(type =>
+                    type.IsClass &&
+                    !type.IsAbstract &&
+                    typeof(Profile).IsAssignableFrom(type) &&
+                    type != typeof(AssemblyMappingProfileLoader)) // ⛔ исключаем самого себя
                 .ToList();
 
             foreach (var type in types)
             {
-                var instance = Activator.CreateInstance(type);
-                if (instance != null)
+                if (Activator.CreateInstance(type) is Profile profile)
                 {
-                    ApplyMappingsFromInstance(instance);
+                    config.AddProfile(profile); // 💡 просто добавляем профиль
+                }
+
+                // 🔍 если есть метод Configure — вызываем его, если нужно
+                var configureMethod = type.GetMethod("Configure");
+                if (configureMethod != null)
+                {
+                    var instance = Activator.CreateInstance(type);
+                    configureMethod.Invoke(instance, new object[] { config });
                 }
             }
-        }
-
-        private void ApplyMappingsFromInstance(object instance)
-        {
-            var methodInfo = instance.GetType().GetMethod("Configure");
-            methodInfo?.Invoke(instance, new object[] { this });
         }
     }
 }

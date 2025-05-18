@@ -13,6 +13,11 @@ namespace Redress.Backend.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ListingDetailsDto>> GetById(Guid id) 
         {
+            // Временно заглушка, чтобы не падало
+            var userId = UserId == Guid.Empty
+                ? Guid.Parse("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
+                : UserId;
+
             var query = new GetListingByIdQuery { Id = id, UserId = UserId };
             var listing = await Mediator.Send(query);
             return Ok(listing);
