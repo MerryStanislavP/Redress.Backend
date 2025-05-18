@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using MediatR.Extensions.FluentValidation.AspNetCore;
 using System.Reflection;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.API.Middleware;
 
 namespace Redress.Backend.API
 {
@@ -54,6 +55,8 @@ namespace Redress.Backend.API
                 });
             });
             var app = builder.Build();
+
+            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
