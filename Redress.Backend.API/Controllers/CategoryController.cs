@@ -30,7 +30,7 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryTreeDto>> Create(CategoryTreeCreateDto category)
+        public async Task<ActionResult<CategoryDto>> Create(CategoryCreateDto category)
         {
             var command = new CreateCategoryCommand
             {

@@ -11,15 +11,15 @@ using Redress.Backend.Application.Common.Behavior;
 
 namespace Redress.Backend.Application.Services.ListingArea.Categories
 {
-    public class CreateCategoryCommand : IRequest<CategoryTreeDto>, IRequireRole
+    public class CreateCategoryCommand : IRequest<CategoryDto>, IRequireRole
     {
-        public CategoryTreeCreateDto Category { get; set; }
+        public CategoryCreateDto Category { get; set; }
         public Guid UserId { get; set; }
 
         public UserRole RequiredRole => UserRole.Admin;
     }
 
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryTreeDto>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Categories
             _mapper = mapper;
         }
 
-        public async Task<CategoryTreeDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             // Check if parent category exists if ParentId is provided
             if (request.Category.ParentId.HasValue)
@@ -46,7 +46,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Categories
             await _context.Categories.AddAsync(category, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<CategoryTreeDto>(category);
+            return _mapper.Map<CategoryDto>(category);
         }
     }
 } 

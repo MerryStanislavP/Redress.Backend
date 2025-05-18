@@ -8,7 +8,7 @@ public class GetListingByIdQueryValidator : AbstractValidator<GetListingByIdQuer
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Listing ID обязателен");
 
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User ID обязателен");
+        //RuleFor(x => x.UserId)
+        //    .NotEmpty().WithMessage("User ID обязателен");
     }
 }
