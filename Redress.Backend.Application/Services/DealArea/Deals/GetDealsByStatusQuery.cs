@@ -1,6 +1,8 @@
 using MediatR;
 using Redress.Backend.Application.Interfaces;
 using Redress.Backend.Contracts.DTOs.CreateDTOs;
+using Redress.Backend.Contracts.DTOs.ReadingDTOs;
+using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Domain.Enums;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

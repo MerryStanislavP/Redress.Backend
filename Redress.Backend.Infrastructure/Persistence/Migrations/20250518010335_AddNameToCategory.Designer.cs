@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Redress.Backend.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Redress.Backend.Infrastructure.Persistence;
 namespace Redress.Backend.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(RedressDbContext))]
-    partial class RedressDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250518010335_AddNameToCategory")]
+    partial class AddNameToCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

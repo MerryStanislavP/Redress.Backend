@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Redress.Backend.Contracts.DTOs.CreateDTOs;
+using Redress.Backend.Contracts.DTOs.ReadingDTOs;
+using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Domain.Entities;
 using Redress.Backend.Domain.Enums;
 using AutoMapper;
