@@ -13,10 +13,7 @@ namespace Redress.Backend.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ListingDetailsDto>> GetById(Guid id) 
         {
-            // Временно заглушка, чтобы не падало
-            var userId = UserId == Guid.Empty
-                ? Guid.Parse("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
-                : UserId;
+
 
             var query = new GetListingByIdQuery { Id = id, UserId = UserId };
             var listing = await Mediator.Send(query);
@@ -52,7 +49,7 @@ namespace Redress.Backend.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("by-category")]
+        [HttpGet]
         public async Task<ActionResult<PaginatedList<ListingDto>>> GetByCategory(
             [FromQuery] Guid categoryId,
             [FromQuery] int page = 1,
@@ -69,7 +66,7 @@ namespace Redress.Backend.API.Controllers
             return Ok(listings);
         }
 
-        [HttpGet("by-sex")]
+        [HttpGet]
         public async Task<ActionResult<PaginatedList<ListingDto>>> GetBySex(
             [FromQuery] Sex sex,
             [FromQuery] int page = 1,

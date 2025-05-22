@@ -10,7 +10,7 @@ namespace Redress.Backend.API.Controllers
     public class ProfileController : BaseController
     {
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProfileDetailsDto>> GetById(Guid id)
+        public async Task<ActionResult<ProfileDetailsDto>> GetById(Guid id) 
         {
             var query = new GetProfileByIdQuery { Id = id};
             var profile = await Mediator.Send(query);
@@ -42,7 +42,7 @@ namespace Redress.Backend.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("user")]
+        [HttpGet] 
         public async Task<ActionResult<ProfileDetailsDto>> GetUserProfile()
         {
             var query = new GetUserProfileQuery { UserId = UserId };

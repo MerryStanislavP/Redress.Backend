@@ -21,8 +21,10 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             if (listing == null)
                 return false;
 
-            // Проверяем, является ли пользователь владельцем листинга
-            if (listing.Profile?.User?.Role == UserRole.Admin)
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
+
+            if (user.Role == UserRole.Admin)
             {
                 return true;
             }

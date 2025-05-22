@@ -40,14 +40,14 @@ namespace Redress.Backend.Application.Services.Auth.Register
             // Hash password
             user.PasswordHash = HashPassword(request.User.PasswordHash);
 
-            // Create profile for user
+            await _context.Users.AddAsync(user, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
             var profile = new Domain.Entities.Profile
             {
                 UserId = user.Id,
                 CreatedAt = DateTime.UtcNow
             };
-
-            await _context.Users.AddAsync(user, cancellationToken);
             await _context.Profiles.AddAsync(profile, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 

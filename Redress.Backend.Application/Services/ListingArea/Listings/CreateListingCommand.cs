@@ -19,7 +19,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
         public ListingCreateDto Listing { get; set; }
         public Guid UserId { get; set; }
 
-        public UserRole RequiredRole => UserRole.Regular;
+        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class CreateListingCommandHandler : IRequestHandler<CreateListingCommand, Guid>

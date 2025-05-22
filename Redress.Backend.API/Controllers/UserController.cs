@@ -18,7 +18,7 @@ namespace Redress.Backend.API.Controllers
             return Ok(user);
         }
 
-        [HttpGet("by-role")]
+        [HttpGet]
         public async Task<ActionResult<PaginatedList<UserDto>>> GetByRole(
             [FromQuery] UserRole role,
             [FromQuery] int page = 1,

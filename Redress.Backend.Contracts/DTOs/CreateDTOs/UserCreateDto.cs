@@ -9,5 +9,6 @@ namespace Redress.Backend.Contracts.DTOs.CreateDTOs
         public string PhoneNumber { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
+        public Sex Sex { get; set; }
     }
 }
