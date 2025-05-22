@@ -51,5 +51,34 @@ namespace Redress.Backend.API.Controllers
             var deals = await Mediator.Send(query);
             return Ok(deals);
         }
+
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] DealUpdateDto updateDto)
+        {
+            var command = new UpdateDealStatusCommand
+            {
+                DealId = id,
+                UserId = UserId,
+                UpdateDto = updateDto
+            };
+            await Mediator.Send(command);
+            return NoContent();
+        }
+
+        [HttpGet("profile/{profileId}")]
+        public async Task<ActionResult<PaginatedList<DealDto>>> GetDealsByProfile(
+            Guid profileId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetDealsByProfileIdQuery
+            {
+                ProfileId = profileId,
+                Page = page,
+                PageSize = pageSize
+            };
+            var deals = await Mediator.Send(query);
+            return Ok(deals);
+        }
     }
 } 
