@@ -17,9 +17,9 @@ namespace Redress.Backend.Application.Services.DealArea.Deals
 {
     public class UpdateDealStatusCommand : IRequest, IOwnershipCheck
     {
-        public Guid DealId { get; set; }
+        public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public DealUpdateDto UpdateDto { get; set; }
+        public DealStatusUpdateDto UpdateDto { get; set; }
 
         public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
         {
@@ -36,8 +36,8 @@ namespace Redress.Backend.Application.Services.DealArea.Deals
             // Get the deal with related entities
             var deal = await context.Deals
                 .Include(d => d.Listing)
-                .ThenInclude(l => l.Profile)
-                .FirstOrDefaultAsync(d => d.Id == DealId, cancellationToken);
+                    .ThenInclude(l => l.Profile)
+                .FirstOrDefaultAsync(d => d.Id == Id, cancellationToken);
 
             if (deal == null)
                 return false;
@@ -61,10 +61,10 @@ namespace Redress.Backend.Application.Services.DealArea.Deals
         public async Task Handle(UpdateDealStatusCommand request, CancellationToken cancellationToken)
         {
             var deal = await _context.Deals
-                .FirstOrDefaultAsync(d => d.Id == request.DealId, cancellationToken);
+                .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
 
             if (deal == null)
-                throw new KeyNotFoundException($"Deal with ID {request.DealId} not found");
+                throw new KeyNotFoundException($"Deal with ID {request.Id} not found");
 
             _mapper.Map(request.UpdateDto, deal);
             await _context.SaveChangesAsync(cancellationToken);

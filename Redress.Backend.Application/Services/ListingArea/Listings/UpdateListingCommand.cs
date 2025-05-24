@@ -49,6 +49,9 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             var listing = await _context.Listings
                 .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
 
+            if (listing == null)
+                throw new KeyNotFoundException($"Listing with ID {request.Id} not found");
+
             // If category is being updated, verify it exists
             if (request.UpdateDto.CategoryId.HasValue)
             {
@@ -59,7 +62,25 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
                     throw new KeyNotFoundException($"Category with ID {request.UpdateDto.CategoryId} not found");
             }
 
-            _mapper.Map(request.UpdateDto, listing);
+            // Update only provided fields
+            if (!string.IsNullOrEmpty(request.UpdateDto.Title))
+                listing.Title = request.UpdateDto.Title;
+
+            if (!string.IsNullOrEmpty(request.UpdateDto.Description))
+                listing.Description = request.UpdateDto.Description;
+
+            if (request.UpdateDto.Price.HasValue)
+                listing.Price = request.UpdateDto.Price.Value;
+
+            if (request.UpdateDto.CategoryId.HasValue)
+                listing.CategoryId = request.UpdateDto.CategoryId.Value;
+
+            if (request.UpdateDto.Latitude.HasValue)
+                listing.Latitude = request.UpdateDto.Latitude.Value;
+
+            if (request.UpdateDto.Longitude.HasValue)
+                listing.Longitude = request.UpdateDto.Longitude.Value;
+
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

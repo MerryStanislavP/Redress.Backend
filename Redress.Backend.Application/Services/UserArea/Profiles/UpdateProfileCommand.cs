@@ -62,7 +62,28 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
             if (profile == null)
                 throw new KeyNotFoundException($"Profile with ID {request.Id} not found");
 
-            _mapper.Map(request.UpdateDto, profile);
+            // Update only provided fields
+            if (request.UpdateDto.Balance.HasValue)
+                profile.Balance = request.UpdateDto.Balance.Value;
+
+            if (!string.IsNullOrEmpty(request.UpdateDto.Bio))
+                profile.Bio = request.UpdateDto.Bio;
+
+            if (request.UpdateDto.Latitude.HasValue)
+                profile.Latitude = request.UpdateDto.Latitude.Value;
+
+            if (request.UpdateDto.Longitude.HasValue)
+                profile.Longitude = request.UpdateDto.Longitude.Value;
+
+            if (request.UpdateDto.RatingCount.HasValue)
+                profile.RatingCount = request.UpdateDto.RatingCount.Value;
+
+            if (request.UpdateDto.RatingStatus.HasValue)
+                profile.RatingStatus = request.UpdateDto.RatingStatus.Value;
+
+            if (request.UpdateDto.AverageRating.HasValue)
+                profile.AverageRating = request.UpdateDto.AverageRating.Value;
+
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

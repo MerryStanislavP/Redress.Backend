@@ -53,11 +53,11 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] DealUpdateDto updateDto)
+        public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] DealStatusUpdateDto updateDto)
         {
             var command = new UpdateDealStatusCommand
             {
-                DealId = id,
+                Id = id,
                 UserId = UserId,
                 UpdateDto = updateDto
             };

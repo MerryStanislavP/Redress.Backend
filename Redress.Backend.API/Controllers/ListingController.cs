@@ -13,8 +13,6 @@ namespace Redress.Backend.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ListingDetailsDto>> GetById(Guid id) 
         {
-
-
             var query = new GetListingByIdQuery { Id = id, UserId = UserId };
             var listing = await Mediator.Send(query);
             return Ok(listing);
@@ -47,6 +45,23 @@ namespace Redress.Backend.API.Controllers
             var command = new DeleteListingCommand { Id = id, UserId = UserId };
             await Mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("by-profile")]
+        public async Task<ActionResult<PaginatedList<ListingDto>>> GetByProfile(
+            [FromQuery] Guid profileId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetListingsByProfileQuery
+            {
+                ProfileId = profileId,
+                Page = page,
+                PageSize = pageSize,
+                UserId = UserId
+            };
+            var listings = await Mediator.Send(query);
+            return Ok(listings);
         }
 
         [HttpGet]

@@ -42,5 +42,19 @@ namespace Redress.Backend.API.Controllers
             await Mediator.Send(command);
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UserUpdateDto updateDto)
+        {
+            var command = new UpdateUserCommand
+            {
+                Id = id,
+                UserId = UserId,
+                UpdateDto = updateDto
+            };
+
+            await Mediator.Send(command);
+            return NoContent();
+        }
     }
 } 

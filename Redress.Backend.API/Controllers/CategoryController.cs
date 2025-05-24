@@ -16,10 +16,11 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpGet("by-sex/{sex}")]
-        public async Task<ActionResult<List<CategoryDto>>> GetBySex(Sex sex)
+        public async Task<ActionResult<List<CategoryTreeDto>>> GetBySex(Sex sex)
         {
             var query = new GetAllCategoriesBySexQuery { Sex = sex, UserId = UserId };
-            return await Mediator.Send(query);
+            var categories = await Mediator.Send(query);
+            return Ok(categories);
         }
 
         [HttpGet("tree")]
