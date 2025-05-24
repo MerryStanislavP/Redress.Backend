@@ -79,7 +79,7 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
                 profile.RatingCount = request.UpdateDto.RatingCount.Value;
 
             if (request.UpdateDto.RatingStatus.HasValue)
-                profile.RatingStatus = request.UpdateDto.RatingStatus.Value;
+                profile.RatingStatus = (Domain.Enums.RatingStatus)request.UpdateDto.RatingStatus.Value;
 
             if (request.UpdateDto.AverageRating.HasValue)
                 profile.AverageRating = request.UpdateDto.AverageRating.Value;

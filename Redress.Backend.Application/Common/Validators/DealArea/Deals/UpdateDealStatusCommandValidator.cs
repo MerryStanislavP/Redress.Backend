@@ -5,7 +5,7 @@ public class UpdateDealStatusCommandValidator : AbstractValidator<UpdateDealStat
 {
     public UpdateDealStatusCommandValidator()
     {
-        RuleFor(x => x.DealId).NotEmpty();
+        RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.UserId).NotEmpty();
 
         RuleFor(x => x.UpdateDto).NotNull();
