@@ -1,13 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
-using Redress.Backend.Domain.Enums;
 
-namespace Redress.Backend.Application.Services.ListingArea.Images
+namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
     public class DeleteListingImageCommand : IRequest, IOwnershipCheck
     {
-        public Guid Id { get; set; }
+        public Guid ImageId { get; set; }
         public Guid UserId { get; set; }
 
         public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
@@ -15,7 +14,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             var image = await context.ListingImages
                 .Include(i => i.Listing)
                 .ThenInclude(l => l.Profile)
-                .FirstOrDefaultAsync(i => i.Id == Id, cancellationToken);
+                .FirstOrDefaultAsync(i => i.Id == ImageId, cancellationToken);
 
             if (image == null)
                 return false;
@@ -39,10 +38,10 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
         public async Task Handle(DeleteListingImageCommand request, CancellationToken cancellationToken)
         {
             var image = await _context.ListingImages
-                .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(i => i.Id == request.ImageId, cancellationToken);
 
             if (image == null)
-                throw new KeyNotFoundException($"Image with ID {request.Id} not found");
+                throw new KeyNotFoundException($"Image with ID {request.ImageId} not found");
 
             // Delete the file from storage
             await _fileService.DeleteFileAsync(image.Url);
@@ -52,4 +51,4 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
-}
+} 

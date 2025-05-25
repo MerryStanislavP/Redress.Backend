@@ -1,53 +1,72 @@
-﻿using MediatR;
-using Redress.Backend.Contracts.DTOs.CreateDTOs;
-using Redress.Backend.Domain.Entities;
-using AutoMapper;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
+using Redress.Backend.Domain.Entities;
 
 namespace Redress.Backend.Application.Services.UserArea.Images
 {
-    public class UploadProfileImageCommand : IRequest<Guid>
+    public class UploadProfileImageCommand : IRequest<Guid>, IOwnershipCheck
     {
-        public ProfileImageCreateDto ProfileImage { get; set; }
+        public IFormFile Image { get; set; }
+        public Guid ProfileId { get; set; }
+        public Guid UserId { get; set; }
+
+        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
+        {
+            var profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == ProfileId, cancellationToken);
+
+            if (profile == null)
+                return false;
+
+            // User can only upload images for their own profile
+            return profile.UserId == UserId;
+        }
     }
 
     public class UploadProfileImageCommandHandler : IRequestHandler<UploadProfileImageCommand, Guid>
     {
         private readonly IRedressDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public UploadProfileImageCommandHandler(IRedressDbContext context, IMapper mapper)
+        public UploadProfileImageCommandHandler(IRedressDbContext context, IFileService fileService)
         {
             _context = context;
-            _mapper = mapper;
+            _fileService = fileService;
         }
 
         public async Task<Guid> Handle(UploadProfileImageCommand request, CancellationToken cancellationToken)
         {
-            // Verify that profile exists
-            var profileExists = await _context.Profiles
-                .AnyAsync(p => p.Id == request.ProfileImage.ProfileId, cancellationToken);
+            var profile = await _context.Profiles
+                .Include(p => p.ProfileImage)
+                .FirstOrDefaultAsync(p => p.Id == request.ProfileId, cancellationToken);
 
-            if (!profileExists)
-                throw new KeyNotFoundException($"Profile with ID {request.ProfileImage.ProfileId} not found");
+            if (profile == null)
+                throw new KeyNotFoundException($"Profile with ID {request.ProfileId} not found");
 
-            // Remove existing profile image if any
-            var existingImage = await _context.ProfileImages
-                .FirstOrDefaultAsync(pi => pi.ProfileId == request.ProfileImage.ProfileId, cancellationToken);
-
-            if (existingImage != null)
+            // Delete existing image if any
+            if (profile.ProfileImage != null)
             {
-                _context.ProfileImages.Remove(existingImage);
+                await _fileService.DeleteFileAsync(profile.ProfileImage.Url);
+                _context.ProfileImages.Remove(profile.ProfileImage);
             }
 
-            var image = _mapper.Map<ProfileImage>(request.ProfileImage);
-            image.CreatedAt = DateTime.UtcNow;
+            // Save new image
+            var imageUrl = await _fileService.SaveFileAsync(request.Image, "profile-images");
 
-            await _context.ProfileImages.AddAsync(image, cancellationToken);
+            var profileImage = new ProfileImage
+            {
+                Name = request.Image.FileName,
+                Url = imageUrl,
+                CreatedAt = DateTime.UtcNow,
+                ProfileId = request.ProfileId
+            };
+
+            await _context.ProfileImages.AddAsync(profileImage, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return image.Id;
+            return profileImage.Id;
         }
     }
 }

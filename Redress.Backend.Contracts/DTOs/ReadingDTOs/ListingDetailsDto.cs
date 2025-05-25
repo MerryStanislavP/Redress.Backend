@@ -9,11 +9,13 @@ namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public decimal Price { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public ListingStatus Status { get; set; } = ListingStatus.Active;
+        public DateTime CreatedAt { get; set; } 
+        public ListingStatus Status { get; set; } 
         public bool IsAuction { get; set; } = false;
         public string Description { get; set; }
         public Guid ProfileId { get; set; }
         public Guid CategoryId { get; set; }
+
+        public List<ListingImageDto> Images { get; set; } = new();
     }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Redress.Backend.Contracts.DTOs.Enums;
 
 namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
 {
     public class UserRoleDto
     {
-
+        public UserRole Role { get; set; }
     }
 }

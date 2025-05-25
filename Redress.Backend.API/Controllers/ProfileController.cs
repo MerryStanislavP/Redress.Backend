@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Redress.Backend.Application.Services.UserArea.Profiles;
+using Redress.Backend.Application.Services.UserArea.Images;
 using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 using Redress.Backend.Contracts.DTOs.UpdateDTOs;
@@ -30,7 +31,7 @@ namespace Redress.Backend.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}/image")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteImage(Guid id)
         {
             var command = new DeleteProfileImageCommand
@@ -40,6 +41,20 @@ namespace Redress.Backend.API.Controllers
             };
             await Mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpPost("upload")]
+        public async Task<ActionResult<Guid>> UploadImage([FromForm] IFormFile image, [FromForm]  Guid profileId)
+        {
+            var command = new UploadProfileImageCommand
+            {
+                Image = image,
+                ProfileId = profileId,
+                UserId = UserId
+            };
+
+            var imageId = await Mediator.Send(command);
+            return Ok(imageId);
         }
 
         [HttpGet] 

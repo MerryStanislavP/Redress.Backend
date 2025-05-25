@@ -10,7 +10,13 @@ namespace Redress.Backend.Application.Common.Mappings.ReadingDTOMappings
     {
         public ListingMapping()
         {
-            CreateMap<Listing, ListingDto>();
+            CreateMap<Listing, ListingDto>()
+                .ForMember(dest => dest.Url,
+                    opt => opt.MapFrom(src =>
+                        src.ListingImages
+                            .OrderBy(img => img.CreatedAt)
+                            .Select(img => img.Url)
+                            .FirstOrDefault()));
         }
     }
 }

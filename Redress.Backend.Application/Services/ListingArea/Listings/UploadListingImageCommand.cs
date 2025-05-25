@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MediatR;
-using Redress.Backend.Contracts.DTOs.ReadingDTOs;
-using Redress.Backend.Domain.Entities;
-using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Redress.Backend.Domain.Entities;
 
-namespace Redress.Backend.Application.Services.ListingArea.Images
+namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
     public class UploadListingImageCommand : IRequest<Guid>, IOwnershipCheck
     {
@@ -23,7 +16,6 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
         {
             var listing = await context.Listings
                 .Include(l => l.Profile)
-                .ThenInclude(p => p.User)
                 .FirstOrDefaultAsync(l => l.Id == ListingId, cancellationToken);
 
             if (listing == null)
@@ -48,16 +40,15 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
         public async Task<Guid> Handle(UploadListingImageCommand request, CancellationToken cancellationToken)
         {
             // Verify that listing exists
-            var listing = await _context.Listings
-                .FirstOrDefaultAsync(l => l.Id == request.ListingId, cancellationToken);
+            var listingExists = await _context.Listings
+                .AnyAsync(l => l.Id == request.ListingId, cancellationToken);
 
-            if (listing == null)
+            if (!listingExists)
                 throw new KeyNotFoundException($"Listing with ID {request.ListingId} not found");
 
-            // Save the image file
+            // Save the image
             var imageUrl = await _fileService.SaveFileAsync(request.Image, "listing-images");
 
-            // Create new image record
             var image = new ListingImage
             {
                 Name = request.Image.FileName,
@@ -72,4 +63,4 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             return image.Id;
         }
     }
-}
+} 

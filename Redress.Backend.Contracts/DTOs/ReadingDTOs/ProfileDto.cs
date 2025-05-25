@@ -2,7 +2,7 @@
 
 namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
 {
-    public class ProfileDto // думаю, этого будет мало, надо будет добавить также CreateProfileDto и UpdateProfileDto, но это на этапе контроллеров уже
+    public class ProfileDto 
     {
         public Guid Id { get; set; }
         public string? Bio { get; set; }

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Redress.Backend.Application.Services.UserArea.Profiles;
+using Redress.Backend.Application.Services.UserArea.Images;
 
 public class DeleteProfileImageCommandValidator : AbstractValidator<DeleteProfileImageCommand>
 {

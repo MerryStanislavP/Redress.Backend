@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Redress.Backend.Application.Services.AuctionArea.Auctions;
 
+using Redress.Backend.Application.Services.AuctionArea.Auctions;
 public class DeleteAuctionCommandValidator : AbstractValidator<DeleteAuctionCommand>
 {
     public DeleteAuctionCommandValidator()

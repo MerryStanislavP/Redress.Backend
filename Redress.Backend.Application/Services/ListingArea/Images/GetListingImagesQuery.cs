@@ -1,26 +1,20 @@
 using MediatR;
 using Redress.Backend.Application.Interfaces;
-using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Contracts.DTOs.ReadingDTOs;
-using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Redress.Backend.Application.Common.Models;
-using AutoMapper.QueryableExtensions;
 using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.ListingArea.Images
 {
-    public class GetListingImagesQuery : IRequest<PaginatedList<ListingImageDto>>
+    public class GetListingImagesQuery : IRequest<List<ListingImageDto>>
     {
         public Guid ListingId { get; set; }
         public Guid UserId { get; set; }
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 3;
     }
 
-    public class GetListingImagesQueryHandler : IRequestHandler<GetListingImagesQuery, PaginatedList<ListingImageDto>>
+    public class GetListingImagesQueryHandler : IRequestHandler<GetListingImagesQuery, List<ListingImageDto>>
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
@@ -31,7 +25,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             _mapper = mapper;
         }
 
-        public async Task<PaginatedList<ListingImageDto>> Handle(GetListingImagesQuery request, CancellationToken cancellationToken)
+        public async Task<List<ListingImageDto>> Handle(GetListingImagesQuery request, CancellationToken cancellationToken)
         {
             // Проверяем существование пользователя
             var user = await _context.Users
@@ -60,19 +54,18 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             if (!hasAccess)
                 throw new UnauthorizedAccessException("You don't have permission to view these images");
 
-            // Получаем изображения, отсортированные по дате создания
-            var query = _context.ListingImages
+            // Получаем изображения, отсортированные по дате создания (от старых к новым)
+            var images = await _context.ListingImages
                 .Where(i => i.ListingId == request.ListingId)
-                .OrderBy(i => i.CreatedAt);
-
-            var totalCount = await query.CountAsync(cancellationToken);
-            var items = await query
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ProjectTo<ListingImageDto>(_mapper.ConfigurationProvider)
+                .OrderBy(i => i.CreatedAt)
+                .Select(i => new ListingImageDto 
+                { 
+                    Id = i.Id,
+                    Url = i.Url
+                })
                 .ToListAsync(cancellationToken);
 
-            return new PaginatedList<ListingImageDto>(items, request.Page, request.PageSize, totalCount);
+            return images;
         }
     }
 } 

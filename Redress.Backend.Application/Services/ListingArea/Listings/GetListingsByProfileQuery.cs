@@ -37,6 +37,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
 
             var query = _context.Listings
                 .Where(l => l.ProfileId == request.ProfileId)
+                .Include(l => l.ListingImages)
                 .OrderByDescending(l => l.CreatedAt);
 
             var totalCount = await query.CountAsync(cancellationToken);

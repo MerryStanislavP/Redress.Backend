@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Redress.Backend.Application.Interfaces;
-using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.UserArea.Images
 {
@@ -12,24 +11,13 @@ namespace Redress.Backend.Application.Services.UserArea.Images
 
         public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
         {
-            var user = await context.Users
-                .FirstOrDefaultAsync(u => u.Id == UserId, cancellationToken);
-
-            if (user == null)
-                return false;
-
-            // Admin can delete any profile image
-            if (user.Role == UserRole.Admin)
-                return true;
-
-            // Get the profile
             var profile = await context.Profiles
                 .FirstOrDefaultAsync(p => p.Id == ProfileId, cancellationToken);
 
             if (profile == null)
                 return false;
 
-            // The user can only delete their own profile image
+            // User can only delete their own profile image
             return profile.UserId == UserId;
         }
     }
@@ -37,10 +25,12 @@ namespace Redress.Backend.Application.Services.UserArea.Images
     public class DeleteProfileImageCommandHandler : IRequestHandler<DeleteProfileImageCommand>
     {
         private readonly IRedressDbContext _context;
+        private readonly IFileService _fileService;
 
-        public DeleteProfileImageCommandHandler(IRedressDbContext context)
+        public DeleteProfileImageCommandHandler(IRedressDbContext context, IFileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
 
         public async Task Handle(DeleteProfileImageCommand request, CancellationToken cancellationToken)
@@ -55,6 +45,10 @@ namespace Redress.Backend.Application.Services.UserArea.Images
             if (profile.ProfileImage == null)
                 throw new InvalidOperationException("Profile does not have an image to delete");
 
+            // Delete the file from storage
+            await _fileService.DeleteFileAsync(profile.ProfileImage.Url);
+
+            // Remove the image record from database
             _context.ProfileImages.Remove(profile.ProfileImage);
             await _context.SaveChangesAsync(cancellationToken);
         }

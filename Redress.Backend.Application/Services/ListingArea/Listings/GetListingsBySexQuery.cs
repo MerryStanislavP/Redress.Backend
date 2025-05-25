@@ -40,6 +40,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
 
             var query = _context.Listings
                 .Include(l => l.Category)
+                .Include(l => l.ListingImages)
                 .Where(l => l.Category.Sex == request.Sex && l.Status == ListingStatus.Active)
                 .OrderByDescending(l => l.CreatedAt);
 

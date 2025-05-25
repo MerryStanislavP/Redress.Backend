@@ -42,6 +42,7 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
                 .Where(l => l.Price >= request.MinPrice && 
                            l.Price <= request.MaxPrice && 
                            l.Status == Domain.Enums.ListingStatus.Active)
+                .Include(l => l.ListingImages)
                 .OrderByDescending(l => l.CreatedAt);
 
             var totalCount = await query.CountAsync(cancellationToken);

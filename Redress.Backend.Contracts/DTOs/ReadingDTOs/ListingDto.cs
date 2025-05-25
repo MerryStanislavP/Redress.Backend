@@ -8,5 +8,7 @@ namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
         public string Title { get; set; }
         public decimal Price { get; set; }
         public bool IsAuction { get; set; }
+
+        public string? Url { get; set; }
     }
 }

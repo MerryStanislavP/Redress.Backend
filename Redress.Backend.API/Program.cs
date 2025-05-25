@@ -11,6 +11,7 @@ using MediatR.Extensions.FluentValidation.AspNetCore;
 using System.Reflection;
 using Redress.Backend.Application.Interfaces;
 using Redress.Backend.API.Middleware;
+using Redress.Backend.Infrastructure.Integration;
 
 namespace Redress.Backend.API
 {
@@ -37,6 +38,13 @@ namespace Redress.Backend.API
 
             // Add Persistence Services
             builder.Services.AddPersistence(builder.Configuration);
+
+            var baseDirectoryFromConfig = builder.Configuration["FileStorage:BaseDirectory"];
+            var baseDirectory = string.IsNullOrWhiteSpace(baseDirectoryFromConfig)
+                ? @"C:\Users\Asus\Desktop\оо\TestsImagesService"
+                : baseDirectoryFromConfig;
+
+            builder.Services.AddFileStorage(baseDirectory);
 
             builder.Services.AddDbContext<RedressDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -71,6 +79,7 @@ namespace Redress.Backend.API
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
 
             app.MapControllers();
 

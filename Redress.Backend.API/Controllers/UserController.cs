@@ -5,6 +5,7 @@ using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Domain.Enums;
 using Redress.Backend.Application.Common.Models;
+using Redress.Backend.Application.Services.UserArea.Profiles;
 
 namespace Redress.Backend.API.Controllers
 {
@@ -55,6 +56,14 @@ namespace Redress.Backend.API.Controllers
 
             await Mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("profile")]
+        public async Task<ActionResult<ProfileDto>> GetProfile()
+        {
+            var query = new GetUserProfileQuery { UserId = UserId };
+            var profile = await Mediator.Send(query);
+            return Ok(profile);
         }
     }
 } 
