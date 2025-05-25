@@ -44,6 +44,14 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             if (!userExists)
                 throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 
+            var categoryExists = await _context.Categories
+                .AnyAsync(u => u.Id == request.CategoryId, cancellationToken);
+
+            if (!categoryExists)
+            {
+                throw new KeyNotFoundException($"User with ID {request.CategoryId} not found");
+            }
+
             var query = _context.Listings
                 .Where(l => l.CategoryId == request.CategoryId &&
                            l.Status == ListingStatus.Active)
