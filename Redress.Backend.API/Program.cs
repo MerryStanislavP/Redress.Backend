@@ -74,6 +74,17 @@ namespace Redress.Backend.API
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            {
+                                context.Response.Headers.Add("Token-Expired", "true");
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             // Add CORS
@@ -95,6 +106,8 @@ namespace Redress.Backend.API
             }
             // --- End migrations ---
 
+            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -109,8 +122,6 @@ namespace Redress.Backend.API
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
             app.UseStaticFiles();
 
