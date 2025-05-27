@@ -12,6 +12,7 @@ namespace Redress.Backend.API.Controllers
     public class AuthController : BaseController
     {
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<Guid>> Register([FromBody] UserCreateDto user)
         {
             var command = new RegisterUserCommand { User = user };
@@ -20,6 +21,7 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
         {
             var command = new LoginCommand { LoginDto = loginDto };
@@ -28,6 +30,7 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<AuthResponseDto>> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
             var command = new RefreshTokenCommand { RefreshTokenDto = refreshTokenDto };
