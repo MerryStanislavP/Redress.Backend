@@ -12,5 +12,14 @@ namespace Redress.Backend.Domain.Entities
         public UserRole Role { get; set; } = UserRole.Regular;
         public Sex? Sex { get; set; }
         public Profile? Profile { get; set; } // нав. свойство
+
+        // Поля для внешней авторизации
+        public string? ExternalId { get; set; }
+        public string? Provider { get; set; }
+        public string? ProviderKey { get; set; }
+        public DateTime? LastLoginAt { get; set; }
+        public bool IsEmailConfirmed { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

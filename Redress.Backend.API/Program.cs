@@ -12,6 +12,10 @@ using System.Reflection;
 using Redress.Backend.Application.Interfaces;
 using Redress.Backend.API.Middleware;
 using Redress.Backend.Infrastructure.Integration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Redress.Backend.Infrastructure.Integration.Authentication;
 
 namespace Redress.Backend.API
 {
@@ -28,6 +32,9 @@ namespace Redress.Backend.API
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -41,10 +48,10 @@ namespace Redress.Backend.API
 
             var baseDirectoryFromConfig = builder.Configuration["FileStorage:BaseDirectory"];
             var baseDirectory = string.IsNullOrWhiteSpace(baseDirectoryFromConfig)
-                ? @"C:\Users\Asus\Desktop\оо\TestsImagesService"
+                ? @"C:\Users\Asus\Desktop\О©╫О©╫\TestsImagesService"
                 : baseDirectoryFromConfig;
 
-            builder.Services.AddFileStorage(baseDirectory);
+            builder.Services.AddInfrastructureIntegration(baseDirectory);
 
             builder.Services.AddDbContext<RedressDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -52,16 +59,32 @@ namespace Redress.Backend.API
             // Add AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            // Add JWT Authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+
             // Add CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyHeader();
-                    policy.AllowAnyMethod();
-                    policy.AllowAnyOrigin();
-                });
+                options.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader());
             });
+
             var app = builder.Build();
 
             app.UseMiddleware<CustomExceptionHandlerMiddleware>();
@@ -75,8 +98,10 @@ namespace Redress.Backend.API
 
             app.UseHttpsRedirection();
 
+            // Use CORS
             app.UseCors("AllowAll");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseStaticFiles();

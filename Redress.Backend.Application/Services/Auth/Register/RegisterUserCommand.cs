@@ -3,8 +3,6 @@ using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Domain.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.Auth.Register
@@ -37,8 +35,8 @@ namespace Redress.Backend.Application.Services.Auth.Register
             // Create user
             var user = _mapper.Map<User>(request.User);
             
-            // Hash password
-            user.PasswordHash = HashPassword(request.User.PasswordHash);
+            // Hash password using BCrypt
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.User.PasswordHash);
 
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -52,15 +50,6 @@ namespace Redress.Backend.Application.Services.Auth.Register
             await _context.SaveChangesAsync(cancellationToken);
 
             return user.Id;
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
         }
     }
 }
