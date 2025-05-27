@@ -95,8 +95,6 @@ namespace Redress.Backend.API
             }
             // --- End migrations ---
 
-            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -111,6 +109,8 @@ namespace Redress.Backend.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
             app.UseStaticFiles();
 
