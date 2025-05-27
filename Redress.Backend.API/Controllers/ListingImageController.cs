@@ -4,9 +4,11 @@ using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Application.Common.Models;
 using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Redress.Backend.API.Controllers
 {
+    [Authorize]
     public class ListingImageController : BaseController
     {
         [HttpGet("{listingId}")]

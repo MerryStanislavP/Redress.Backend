@@ -4,9 +4,11 @@ using Redress.Backend.Contracts.DTOs.CreateDTOs;
 using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Application.Common.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Redress.Backend.API.Controllers
 {
+    [Authorize]
     public class DealController : BaseController
     {
         [HttpGet("{id}")]

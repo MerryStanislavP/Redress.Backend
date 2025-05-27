@@ -6,9 +6,11 @@ using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Domain.Enums;
 using Redress.Backend.Application.Common.Models;
 using Redress.Backend.Application.Services.UserArea.Profiles;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Redress.Backend.API.Controllers
 {
+    [Authorize]
     public class UserController : BaseController
     {
         [HttpGet("{id}")]

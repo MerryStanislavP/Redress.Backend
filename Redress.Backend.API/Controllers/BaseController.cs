@@ -10,7 +10,6 @@ namespace Redress.Backend.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    [Authorize]
     public abstract class BaseController : ControllerBase
     {
         private IMediator _mediator;

@@ -5,9 +5,11 @@ using Redress.Backend.Contracts.DTOs.UpdateDTOs;
 using Redress.Backend.Contracts.DTOs.ReadingDTOs;
 using Redress.Backend.Application.Common.Models;
 using Redress.Backend.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Redress.Backend.API.Controllers
 {
+    [Authorize]
     public class ListingController : BaseController
     {
         [HttpGet("{id}")]
