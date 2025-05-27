@@ -87,6 +87,14 @@ namespace Redress.Backend.API
 
             var app = builder.Build();
 
+            // --- Apply migrations automatically ---
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<Redress.Backend.Infrastructure.Persistence.RedressDbContext>();
+                db.Database.Migrate();
+            }
+            // --- End migrations ---
+
             app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
             // Configure the HTTP request pipeline.
