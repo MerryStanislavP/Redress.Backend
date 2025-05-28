@@ -39,9 +39,9 @@ namespace Redress.Backend.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("profile/{profileId}")]
+        [HttpGet("profile")]
         public async Task<ActionResult<PaginatedList<FeedbackDto>>> GetProfileFeedbacks(
-            Guid profileId,
+            [FromQuery] Guid profileId,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
