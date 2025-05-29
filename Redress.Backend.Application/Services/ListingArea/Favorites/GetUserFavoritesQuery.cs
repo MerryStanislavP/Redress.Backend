@@ -29,11 +29,13 @@ namespace Redress.Backend.Application.Services.ListingArea.Favorites
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public GetUserFavoritesQueryHandler(IRedressDbContext context, IMapper mapper)
+        public GetUserFavoritesQueryHandler(IRedressDbContext context, IMapper mapper, IFileService fileService)
         {
             _context = context;
             _mapper = mapper;
+            _fileService = fileService;
         }
 
         public async Task<PaginatedList<ListingDto>> Handle(GetUserFavoritesQuery request, CancellationToken cancellationToken)
@@ -69,6 +71,13 @@ namespace Redress.Backend.Application.Services.ListingArea.Favorites
                 .Take(request.PageSize)
                 .ProjectTo<ListingDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
+
+            // Для каждого объявления получаем signed URL для главного изображения
+            foreach (var item in items)
+            {
+                if (!string.IsNullOrEmpty(item.Url))
+                    item.Url = await _fileService.GetFileUrlAsync(item.Url);
+            }
 
             return new PaginatedList<ListingDto>(items, request.Page, request.PageSize, totalCount);
         }
