@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-
+using System.Threading.Tasks;
 
 namespace Redress.Backend.Application.Interfaces
 {
@@ -7,6 +7,6 @@ namespace Redress.Backend.Application.Interfaces
     {
         Task<string> SaveFileAsync(IFormFile file, string directory);
         Task DeleteFileAsync(string filePath);
-        string GetFileUrl(string filePath);
+        Task<string> GetFileUrlAsync(string filePath);
     }
 }

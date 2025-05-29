@@ -2,6 +2,7 @@
 using Redress.Backend.Application.Interfaces;
 using Supabase;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace Redress.Backend.Infrastructure.Integration.FileStorage
 {
@@ -43,7 +44,8 @@ namespace Redress.Backend.Infrastructure.Integration.FileStorage
                 if (response == null)
                     throw new Exception("Failed to upload file to Supabase Storage");
 
-                return $"/{filePath}";
+                // В БД сохраняем только относительный путь
+                return filePath;
             }
             catch (Exception ex)
             {
@@ -72,27 +74,20 @@ namespace Redress.Backend.Infrastructure.Integration.FileStorage
             }
         }
 
-        public string GetFileUrl(string filePath)
+        public async Task<string> GetFileUrlAsync(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 return string.Empty;
 
             var path = filePath.TrimStart('/');
-            try
-            {
-                var url = _supabase.Storage
-                    .From(_bucket)
-                    .GetPublicUrl(path);
+            int oneYearSeconds = 31536000;
 
-                if (string.IsNullOrEmpty(url))
-                    throw new Exception("Failed to get file URL from Supabase Storage");
+            var signedUrl = await _supabase.Storage
+                .From(_bucket)
+                .CreateSignedUrl(path, oneYearSeconds);
 
-                return url;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to get file URL from Supabase: {ex.Message}", ex);
-            }
+            return signedUrl ?? string.Empty;
         }
+
     }
 }
