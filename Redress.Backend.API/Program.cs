@@ -51,7 +51,7 @@ namespace Redress.Backend.API
                 ? @"C:\Users\Asus\Desktop\��\TestsImagesService"
                 : baseDirectoryFromConfig;
 
-            builder.Services.AddInfrastructureIntegration(baseDirectory);
+            builder.Services.AddInfrastructureIntegration(builder.Configuration);
 
             builder.Services.AddDbContext<RedressDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
