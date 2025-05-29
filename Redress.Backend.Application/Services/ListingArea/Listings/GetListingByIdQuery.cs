@@ -23,11 +23,13 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public GetListingByIdQueryHandler(IRedressDbContext context, IMapper mapper)
+        public GetListingByIdQueryHandler(IRedressDbContext context, IMapper mapper, IFileService fileService)
         {
             _context = context;
             _mapper = mapper;
+            _fileService = fileService;
         }
 
         public async Task<ListingDetailsDto> Handle(GetListingByIdQuery request, CancellationToken cancellationToken)
@@ -49,7 +51,12 @@ namespace Redress.Backend.Application.Services.ListingArea.Listings
             if (listing == null)
                 throw new KeyNotFoundException($"Listing with ID {request.Id} not found");
 
-            return _mapper.Map<ListingDetailsDto>(listing);
+            var dto = _mapper.Map<ListingDetailsDto>(listing);
+            foreach (var img in dto.Images)
+            {
+                img.Url = await _fileService.GetFileUrlAsync(img.Url);
+            }
+            return dto;
         }
     }
 }

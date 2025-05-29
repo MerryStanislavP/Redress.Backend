@@ -17,12 +17,12 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
     public class GetListingImagesQueryHandler : IRequestHandler<GetListingImagesQuery, List<ListingImageDto>>
     {
         private readonly IRedressDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public GetListingImagesQueryHandler(IRedressDbContext context, IMapper mapper)
+        public GetListingImagesQueryHandler(IRedressDbContext context, IFileService fileService)
         {
             _context = context;
-            _mapper = mapper;
+            _fileService = fileService;
         }
 
         public async Task<List<ListingImageDto>> Handle(GetListingImagesQuery request, CancellationToken cancellationToken)
@@ -58,14 +58,20 @@ namespace Redress.Backend.Application.Services.ListingArea.Images
             var images = await _context.ListingImages
                 .Where(i => i.ListingId == request.ListingId)
                 .OrderBy(i => i.CreatedAt)
-                .Select(i => new ListingImageDto 
-                { 
-                    Id = i.Id,
-                    Url = i.Url
-                })
                 .ToListAsync(cancellationToken);
 
-            return images;
+            var result = new List<ListingImageDto>();
+            foreach (var img in images)
+            {
+                var signedUrl = await _fileService.GetFileUrlAsync(img.Url);
+                result.Add(new ListingImageDto
+                {
+                    Id = img.Id,
+                    Url = signedUrl,
+                    CreatedAt = img.CreatedAt
+                });
+            }
+            return result;
         }
     }
 } 

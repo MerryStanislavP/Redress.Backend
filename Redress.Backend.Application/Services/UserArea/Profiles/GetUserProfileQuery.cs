@@ -16,11 +16,13 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
     {
         private readonly IRedressDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public GetUserProfileQueryHandler(IRedressDbContext context, IMapper mapper)
+        public GetUserProfileQueryHandler(IRedressDbContext context, IMapper mapper, IFileService fileService)
         {
             _context = context;
             _mapper = mapper;
+            _fileService = fileService;
         }
 
         public async Task<ProfileDetailsDto> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
@@ -32,7 +34,12 @@ namespace Redress.Backend.Application.Services.UserArea.Profiles
             if (profile == null)
                 throw new KeyNotFoundException($"Profile for user with ID {request.UserId} not found");
 
-            return _mapper.Map<ProfileDetailsDto>(profile);
+            var dto = _mapper.Map<ProfileDetailsDto>(profile);
+            if (dto.ProfileImage != null && !string.IsNullOrEmpty(dto.ProfileImage.Url))
+            {
+                dto.ProfileImage.Url = await _fileService.GetFileUrlAsync(dto.ProfileImage.Url);
+            }
+            return dto;
         }
     }
 } 
