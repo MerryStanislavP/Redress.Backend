@@ -30,7 +30,7 @@ namespace Redress.Backend.Infrastructure.Integration
                 };
 
                 var supabaseClient = new Supabase.Client(options.Url, options.Key, supabaseOptions);
-                supabaseClient.InitializeAsync().Wait();
+                supabaseClient.InitializeAsync().GetAwaiter().GetResult();
                 return supabaseClient;
             });
 
