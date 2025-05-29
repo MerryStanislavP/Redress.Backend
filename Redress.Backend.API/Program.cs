@@ -46,13 +46,10 @@ namespace Redress.Backend.API
             // Add Persistence Services
             builder.Services.AddPersistence(builder.Configuration);
 
-            var baseDirectoryFromConfig = builder.Configuration["FileStorage:BaseDirectory"];
-            var baseDirectory = string.IsNullOrWhiteSpace(baseDirectoryFromConfig)
-                ? @"C:\Users\Asus\Desktop\��\TestsImagesService"
-                : baseDirectoryFromConfig;
-
+            // Add Infrastructure Integration Services
             builder.Services.AddInfrastructureIntegration(builder.Configuration);
 
+            // Add DbContext
             builder.Services.AddDbContext<RedressDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -98,13 +95,12 @@ namespace Redress.Backend.API
 
             var app = builder.Build();
 
-            // --- Apply migrations automatically ---
+            // Apply migrations automatically
             using (var scope = app.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<Redress.Backend.Infrastructure.Persistence.RedressDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<RedressDbContext>();
                 db.Database.Migrate();
             }
-            // --- End migrations ---
 
             app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
