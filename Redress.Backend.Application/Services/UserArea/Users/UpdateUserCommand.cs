@@ -58,22 +58,13 @@ namespace Redress.Backend.Application.Services.UserArea.Users
             if (!string.IsNullOrEmpty(request.UpdateDto.PhoneNumber))
                 user.PhoneNumber = request.UpdateDto.PhoneNumber;
 
-            // Если предоставлен новый пароль, хешируем его
+            // Если предоставлен новый пароль, хешируем его через BCrypt
             if (!string.IsNullOrEmpty(request.UpdateDto.PasswordHash))
             {
-                user.PasswordHash = HashPassword(request.UpdateDto.PasswordHash);
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.UpdateDto.PasswordHash);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
         }
     }
 } 
