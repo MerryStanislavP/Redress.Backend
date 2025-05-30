@@ -66,5 +66,12 @@ namespace Redress.Backend.API.Controllers
             var profile = await Mediator.Send(query);
             return Ok(profile);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> GetProfileImageUrl(Guid id)
+        {
+            var url = await Mediator.Send(new GetProfileImageCommand { ProfileId = id, UserId = UserId});
+            return Ok(url);
+        }
     }
 } 
