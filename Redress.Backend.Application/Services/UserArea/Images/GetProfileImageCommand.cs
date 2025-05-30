@@ -4,21 +4,10 @@ using Redress.Backend.Application.Interfaces;
 
 namespace Redress.Backend.Application.Services.UserArea.Images
 {
-    public class GetProfileImageCommand : IRequest<string>, IOwnershipCheck
+    public class GetProfileImageCommand : IRequest<string>
     {
         public Guid ProfileId { get; set; }
         public Guid UserId { get; set; }
-        public async Task<bool> CheckOwnershipAsync(IRedressDbContext context, CancellationToken cancellationToken)
-        {
-            var profile = await context.Profiles
-                .FirstOrDefaultAsync(p => p.Id == ProfileId, cancellationToken);
-
-            if (profile == null)
-                return false;
-
-            // User can only delete their own profile image
-            return profile.UserId == UserId;
-        }
     }
 
     public class GetProfileImageCommandHandler : IRequestHandler<GetProfileImageCommand, string>
