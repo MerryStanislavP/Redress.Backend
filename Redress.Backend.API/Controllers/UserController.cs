@@ -61,7 +61,7 @@ namespace Redress.Backend.API.Controllers
         }
 
         [HttpGet("profile")]
-        public async Task<ActionResult<ProfileDto>> GetProfile()
+        public async Task<ActionResult<ProfileDetailsDto>> GetProfile()
         {
             var query = new GetUserProfileQuery { UserId = UserId };
             var profile = await Mediator.Send(query);
