@@ -12,6 +12,7 @@ namespace Redress.Backend.Contracts.DTOs.ReadingDTOs
         public DateTime CreatedAt { get; set; } 
         public ListingStatus Status { get; set; } 
         public bool IsAuction { get; set; } = false;
+        public Guid? AuctionId { get; set; }
         public string Description { get; set; }
         public Guid ProfileId { get; set; }
         public Guid CategoryId { get; set; }
