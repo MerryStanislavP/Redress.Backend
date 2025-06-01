@@ -118,5 +118,20 @@ namespace Redress.Backend.API.Controllers
             var listings = await Mediator.Send(query);
             return Ok(listings);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<PaginatedList<ListingDto>>> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetAllListingsQuery
+            {
+                Page = page,
+                PageSize = pageSize,
+                UserId = UserId
+            };
+            var listings = await Mediator.Send(query);
+            return Ok(listings);
+        }
     }
 } 
