@@ -11,6 +11,21 @@ namespace Redress.Backend.API.Controllers
     [Authorize]
     public class FeedbackController : BaseController
     {
+        [HttpGet]
+        public async Task<ActionResult<PaginatedList<FeedbackDetailsDto>>> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetAllFeedbacksQuery
+            {
+                Page = page,
+                PageSize = pageSize,
+                UserId = UserId
+            };
+            var feedbacks = await Mediator.Send(query);
+            return Ok(feedbacks);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<FeedbackDetailsDto>> GetById(Guid id)
         {
