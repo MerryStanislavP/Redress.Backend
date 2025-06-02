@@ -9,13 +9,12 @@ using Redress.Backend.Domain.Enums;
 
 namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
-    public class GetAllListingsQuery : IRequest<PaginatedList<ListingDto>>, IRequireRole
+    public class GetAllListingsQuery : IRequest<PaginatedList<ListingDto>>
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public Guid UserId { get; set; }
 
-        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class GetAllListingsQueryHandler : IRequestHandler<GetAllListingsQuery, PaginatedList<ListingDto>>

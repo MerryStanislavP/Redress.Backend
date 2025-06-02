@@ -39,6 +39,9 @@ namespace Redress.Backend.Infrastructure.Integration
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IUserContextService, UserContextService>();
 
+            services.Configure<GoogleAuthOptions>(configuration.GetSection("Authentication:Google"));
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
             return services;
         }
     }
