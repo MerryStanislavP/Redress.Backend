@@ -10,8 +10,6 @@ using Redress.Backend.Application.Interfaces;
 namespace Redress.Backend.API.Controllers
 {
     [AllowAnonymous]
-    [ApiController]
-    [Route("api/[controller]")]
     public class AuthController : BaseController
     {
         private readonly IGoogleAuthService _googleAuthService;
