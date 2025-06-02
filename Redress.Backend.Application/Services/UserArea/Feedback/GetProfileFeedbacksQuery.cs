@@ -41,7 +41,7 @@ namespace Redress.Backend.Application.Services.UserArea.Feedback
             var query = _context.Feedbacks
                 .Include(f => f.Deal)
                     .ThenInclude(d => d.Listing)
-                        .ThenInclude(l => l.ProfileId)
+                        .ThenInclude(l => l.Profile)
                 .Where(f => f.Deal.Listing.ProfileId == request.ProfileId)
                 .OrderByDescending(f => f.CreatedAt);
 
