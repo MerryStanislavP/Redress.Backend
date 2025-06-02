@@ -12,7 +12,7 @@ namespace Redress.Backend.Application.Common.Mappings.ReadingDTOMappings
         {
             CreateMap<Feedback, FeedbackDetailsDto>()
                 .ForMember(dest => dest.Deal, opt => opt.MapFrom(src => src.Deal))
-                .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Deal.Profile));
+                .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Deal.Listing.Profile));
         }
     }
 } 
