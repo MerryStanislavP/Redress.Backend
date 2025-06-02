@@ -14,12 +14,11 @@ using Redress.Backend.Application.Common.Behavior;
 
 namespace Redress.Backend.Application.Services.ListingArea.Listings
 {
-    public class CreateListingCommand : IRequest<Guid>, IRequireRole
+    public class CreateListingCommand : IRequest<Guid>
     {
         public ListingCreateDto Listing { get; set; }
         public Guid UserId { get; set; }
 
-        public UserRole RequiredRole => UserRole.Admin;
     }
 
     public class CreateListingCommandHandler : IRequestHandler<CreateListingCommand, Guid>

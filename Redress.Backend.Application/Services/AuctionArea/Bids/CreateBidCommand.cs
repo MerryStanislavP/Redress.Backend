@@ -58,7 +58,7 @@ namespace Redress.Backend.Application.Services.AuctionArea.Bids
                 throw new KeyNotFoundException($"Profile with ID {request.Bid.ProfileId} not found");
 
             // Check if bid amount is valid
-            var highestBid = auction.Bids.Max(b => b.Amount);
+            var highestBid = auction.Bids.Select(b => b.Amount).DefaultIfEmpty(0).Max();
             var minBidAmount = Math.Max(auction.StartPrice, highestBid + auction.MinStep);
 
             if (request.Bid.Amount < minBidAmount)

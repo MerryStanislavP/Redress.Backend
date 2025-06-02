@@ -74,7 +74,7 @@ namespace Redress.Backend.Application.Services.UserArea.Feedback
                     .Select(d => d.Feedback.Rating)
                     .ToListAsync(cancellationToken);
 
-                profile.AverageRating = allFeedbacks.Average();
+                profile.AverageRating = allFeedbacks.Any() ? allFeedbacks.Average() : 0;
                 profile.RatingCount = allFeedbacks.Count;
             }
 
